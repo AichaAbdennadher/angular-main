@@ -3,19 +3,19 @@
     Page <span class="font-bold text-slate-900">{{ currentPage }}</span> sur <span class="font-bold text-slate-900">{{ totalPages || 1 }}</span>
   </div>
   
-  <ul class="inline-flex items-center gap-1">
+  <ul class="inline-flex items-center gap-2">
     <li>
       <button
         (click)="goToPage(currentPage - 1)"
         [disabled]="currentPage === 1"
-        class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-[#1d4b99] hover:border-[#1d4b99] disabled:opacity-30 disabled:pointer-events-none transition-all"
+        class="w-9 h-9 flex items-center justify-center rounded-full border border-blue-100 text-slate-400 bg-white hover:bg-blue-50 hover:text-[#478af5] hover:border-[#478af5] disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
       >
-        <mat-icon style="font-size: 20px; width: 20px; height: 20px;">chevron_left</mat-icon>
+        <lucide-icon name="chevron-left" class="w-4 h-4"></lucide-icon>
       </button>
     </li>
 
     <li>
-      <div class="w-10 h-10 flex items-center justify-center rounded-xl bg-[#1d4b99] text-white font-bold shadow-lg shadow-[#1d4b99]/20">
+      <div class="w-9 h-9 flex items-center justify-center rounded-full bg-blue-50 text-[#478af5] font-black border border-blue-200 shadow-sm">
         {{ currentPage }}
       </div>
     </li>
@@ -24,9 +24,9 @@
       <button
         (click)="goToPage(currentPage + 1)"
         [disabled]="currentPage === totalPages || totalPages === 0"
-        class="w-10 h-10 flex items-center justify-center rounded-xl border border-slate-200 text-slate-400 bg-white hover:bg-slate-50 hover:text-[#1d4b99] hover:border-[#1d4b99] disabled:opacity-30 disabled:pointer-events-none transition-all"
+        class="w-9 h-9 flex items-center justify-center rounded-full border border-blue-100 text-slate-400 bg-white hover:bg-blue-50 hover:text-[#478af5] hover:border-[#478af5] disabled:opacity-30 disabled:pointer-events-none transition-all shadow-sm"
       >
-        <mat-icon style="font-size: 20px; width: 20px; height: 20px;">chevron_right</mat-icon>
+        <lucide-icon name="chevron-right" class="w-4 h-4"></lucide-icon>
       </button>
     </li>
   </ul>

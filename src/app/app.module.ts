@@ -38,7 +38,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { FooterComponent } from './pages/footer/footer.component';
 import { AdminDashboardComponent } from './pages/admin-dashboard/admin-dashboard.component';
-import { LucideAngularModule, Users, Newspaper, FolderTree, MessageSquare, MessageSquareLock, Shield, File, Calendar, Coins, XCircle, Search, SearchX, Filter, ChevronDown, CheckCircle, Eye, EyeOff, Lock, Unlock, X, Mail, Plus, Edit, Trash2, UserMinus, User, Settings, LogOut, RotateCw, Flag, ThumbsUp, ThumbsDown } from 'lucide-angular';
+import { LucideAngularModule, Users, Newspaper, FolderTree, MessageSquare, MessageSquareLock, Shield, File, Calendar, Coins, XCircle, Search, SearchX, Filter, ChevronDown, ChevronLeft, ChevronRight, CheckCircle, Eye, EyeOff, Lock, Unlock, X, Mail, Plus, Edit, Trash2, UserMinus, User, Settings, LogOut, RotateCw, Flag, ThumbsUp, ThumbsDown } from 'lucide-angular';
 import { PostesMComponent } from './pages/postes-m/postes-m.component';
 import { ModerateurLayoutComponent } from './pages/moderateur-layout/moderateur-layout.component';
 
@@ -81,7 +81,7 @@ import { ModerateurLayoutComponent } from './pages/moderateur-layout/moderateur-
     MatMenuModule,
     MatBadgeModule,
     MatSelectModule,
-    LucideAngularModule.pick({ Users, Newspaper, FolderTree, Shield, MessageSquare, MessageSquareLock, File, Calendar, Coins, XCircle, Search, SearchX, Filter, ChevronDown, CheckCircle, Eye, EyeOff, Lock, Unlock, X, Mail, Plus, Edit, Trash2, UserMinus, User, Settings, LogOut, RotateCw, Flag, ThumbsUp, ThumbsDown })
+    LucideAngularModule.pick({ Users, Newspaper, FolderTree, Shield, MessageSquare, MessageSquareLock, File, Calendar, Coins, XCircle, Search, SearchX, Filter, ChevronDown, ChevronLeft, ChevronRight, CheckCircle, Eye, EyeOff, Lock, Unlock, X, Mail, Plus, Edit, Trash2, UserMinus, User, Settings, LogOut, RotateCw, Flag, ThumbsUp, ThumbsDown })
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true }
