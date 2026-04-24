@@ -31,12 +31,70 @@
   <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
     <div class="relative flex-1">
       <lucide-icon name="search"
-        class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400"></lucide-icon>
-      <input type="text" placeholder="Rechercher un post par titre, contenu ou auteur..." [ngModel]="searchQuery()"
-        (ngModelChange)="searchQuery.set($event)"
-        class="w-full pl-10 pr-4 py-2.5 border border-slate-200 rounded-lg text-sm focus:ring-2 focus:ring-[#478af5] focus:border-transparent outline-none transition-all" />
+        class="w-5 h-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400"></lucide-icon>
+      <input type="text" placeholder="Rechercher" [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchQueryChange($event)"
+        class="w-full pl-11 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#478af5] outline-none transition-all" />
     </div>
 
+    <div class="relative flex items-center gap-2">
+      <button (click)="toggleFilter()"
+        class="flex items-center space-x-2 px-4 py-2 border border-slate-200 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 transition-colors">
+        <lucide-icon name="filter" class="w-4 h-4"></lucide-icon>
+        <span>Filtrer</span>
+        <lucide-icon name="chevron-down" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <!-- Reset Button Icon -->
+      <button *ngIf="statusFilter() !== 'all' || lockFilter() !== 'all' || specificDateFilter() || searchQuery()" 
+        (click)="clearFilters()"
+        class="p-2 text-slate-400 hover:text-[#478af5] hover:bg-blue-50 rounded-lg transition-all"
+        title="Réinitialiser les filtres">
+        <lucide-icon name="rotate-cw" class="w-4 h-4"></lucide-icon>
+      </button>
+
+      <!-- Filter Dropdown -->
+      <div *ngIf="isFilterOpen()"
+        class="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Statut du post</label>
+          <select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($any($event))"
+            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-[#478af5] outline-none">
+            <option value="all">Tous les posts</option>
+            <option value="visible">Visible</option>
+            <option value="hidden">Masqué</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Commentaires</label>
+          <select [ngModel]="lockFilter()" (ngModelChange)="onLockFilterChange($any($event))"
+            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-[#478af5] outline-none">
+            <option value="all">Tous</option>
+            <option value="locked">Verrouillés</option>
+            <option value="unlocked">Ouverts</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Date</label>
+          <input type="date" [ngModel]="specificDateFilter()" (ngModelChange)="onSpecificDateFilterChange($event)"
+            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-[#478af5] outline-none" />
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Tri par date</label>
+          <select [ngModel]="dateSort()" (ngModelChange)="onDateSortChange($any($event))"
+            class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-[#478af5] outline-none">
+            <option value="recent">Plus récent au plus ancien</option>
+            <option value="ancien">Plus ancien au plus récent</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Overlay to close filter -->
+      <div *ngIf="isFilterOpen()" (click)="toggleFilter()" class="fixed inset-0 z-40 bg-transparent"></div>
+    </div>
 
   </div>
 

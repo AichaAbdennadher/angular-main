@@ -36,16 +36,58 @@ export class PostesMComponent implements OnInit {
   // Pagination & Filtering Signals
   currentPage = signal(1);
   itemsPerPage = 10;
-  
-  // Get all posts matching the search query (without pagination)
+
+  isFilterOpen = signal(false);
+  statusFilter = signal<'all' | 'visible' | 'hidden'>('all');
+  lockFilter = signal<'all' | 'locked' | 'unlocked'>('all');
+  dateSort = signal<'recent' | 'ancien'>('recent');
+  specificDateFilter = signal<string | null>(null);
+
+  // Get all posts matching search and filters
   getFilteredPosts = computed(() => {
+    let results = this.posts();
+
+    // 1. Search Query
     const query = this.searchQuery().toLowerCase();
-    if (!query) return this.posts();
-    return this.posts().filter(post => 
-      post.titre?.toLowerCase().includes(query) || 
-      post.contenu?.toLowerCase().includes(query) ||
-      post.user?.pseudo?.toLowerCase().includes(query)
-    );
+    if (query) {
+      results = results.filter(post =>
+        post.titre?.toLowerCase().includes(query) ||
+        post.user?.pseudo?.toLowerCase().includes(query) ||
+        post.categorie?.titre?.toLowerCase().includes(query)
+      );
+    }
+
+    // 2. Status Filter
+    if (this.statusFilter() === 'visible') {
+      results = results.filter(post => !post.is_hidden);
+    } else if (this.statusFilter() === 'hidden') {
+      results = results.filter(post => post.is_hidden);
+    }
+
+    // 3. Lock Filter
+    if (this.lockFilter() === 'locked') {
+      results = results.filter(post => post.is_locked);
+    } else if (this.lockFilter() === 'unlocked') {
+      results = results.filter(post => !post.is_locked);
+    }
+
+    // 4. Date Sorting
+    results = [...results].sort((a, b) => {
+      const dateA = new Date(a.created_at).getTime();
+      const dateB = new Date(b.created_at).getTime();
+      return this.dateSort() === 'recent' ? dateB - dateA : dateA - dateB;
+    });
+
+    // 5. Specific Date Filter
+    if (this.specificDateFilter()) {
+      results = results.filter(post => {
+        if (!post.created_at) return false;
+        const postDate = new Date(post.created_at).toISOString().split('T')[0];
+        return postDate === this.specificDateFilter();
+      });
+    }
+
+    return results;
   });
 
   filteredCount = computed(() => this.getFilteredPosts().length);
@@ -63,7 +105,7 @@ export class PostesMComponent implements OnInit {
     private authService: AuthService,
     private dashboardService: DashboardService,
     private commentService: CommentService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadPosts();
@@ -88,6 +130,49 @@ export class PostesMComponent implements OnInit {
     this.currentPage.set(page);
   }
 
+  onSearchQueryChange(value: string) {
+    this.searchQuery.set(value);
+    this.currentPage.set(1);
+  }
+
+  toggleFilter() {
+    this.isFilterOpen.update(v => !v);
+  }
+
+  onStatusFilterChange(value: any) {
+    this.statusFilter.set(value);
+    this.currentPage.set(1);
+  }
+
+  onLockFilterChange(value: any) {
+    this.lockFilter.set(value);
+    this.currentPage.set(1);
+  }
+
+  onDateSortChange(value: any) {
+    this.dateSort.set(value);
+    this.currentPage.set(1);
+  }
+
+  onSpecificDateFilterChange(value: string) {
+    this.specificDateFilter.set(value || null);
+    this.currentPage.set(1);
+  }
+
+  clearFilters() {
+    this.searchQuery.set('');
+    this.statusFilter.set('all');
+    this.lockFilter.set('all');
+    this.dateSort.set('recent');
+    this.specificDateFilter.set(null);
+    this.currentPage.set(1);
+    this.isFilterOpen.set(false);
+  }
+
+  openAddModal() {
+    this.showNotification('Fonctionnalité d\'ajout de post bientôt disponible', 'info');
+  }
+
   deletePost(id: number): void {
     if (confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
       this.postService.deletePost(id).subscribe({
@@ -108,8 +193,9 @@ export class PostesMComponent implements OnInit {
     const date = new Date(dateStr);
     const day = date.toLocaleDateString('fr-FR', { day: 'numeric' });
     const month = date.toLocaleDateString('fr-FR', { month: 'short' }).replace('.', '');
+    const year = date.getFullYear();
     const time = date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-    return `${day} ${month}., ${time}`;
+    return `${day} ${month} ${year}, ${time}`;
   }
 
   getCategoryStyles(category: any) {
@@ -126,7 +212,7 @@ export class PostesMComponent implements OnInit {
     let color = '#64748b'; // default slate
     if (role === 'admin') color = '#7c3aed'; // purple
     if (role === 'moderateur') color = '#d97706'; // amber/orange
-    
+
     return {
       'background-color': color + '15',
       'color': color,
@@ -149,11 +235,11 @@ export class PostesMComponent implements OnInit {
 
   toggleStatus(post: any): void {
     if (!post.user?.id) return;
-    
+
     this.dashboardService.toggleStatus(post.user.id).subscribe({
       next: (res) => {
         // Mettre à jour le statut de l'utilisateur pour tous les posts de cet utilisateur
-        this.posts.update(allPosts => 
+        this.posts.update(allPosts =>
           allPosts.map(p => {
             if (p.user?.id === post.user.id) {
               return { ...p, user: { ...p.user, status: res.status } };
