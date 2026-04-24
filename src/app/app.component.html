@@ -1,9 +1,7 @@
 <ng-container *ngIf="showNavFooter">
   <app-navbar></app-navbar>
-  
-  <app-category-bar
-    *ngIf="isLoggedIn"
-    (categorySelected)="onCategorySelected($event)">
+
+  <app-category-bar *ngIf="isLoggedIn" (categorySelected)="onCategorySelected($event)">
   </app-category-bar>
 </ng-container>
 
@@ -12,4 +10,3 @@
 </div>
 
 <app-footer *ngIf="showNavFooter"></app-footer>
- 
