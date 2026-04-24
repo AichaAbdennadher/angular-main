@@ -3,7 +3,6 @@
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <h1 class="text-2xl font-bold text-slate-900">Gestion des Modérateurs</h1>
-      <p class="text-slate-500 text-sm mt-1">Gérez les accès et les permissions de l'équipe</p>
     </div>
   </div>
 
@@ -107,11 +106,11 @@
                 <button (click)="openEditModal(mod)"
                   class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                   title="Modifier">
-                  <lucide-icon name="edit" class="w-4 h-4"></lucide-icon>
+                  <lucide-icon name="edit" class="w-5 h-5"></lucide-icon>
                 </button> <button (click)="deleteModerateur(mod.id)"
                   class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
                   title="Supprimer">
-                  <lucide-icon name="trash2" class="w-4 h-4"></lucide-icon>
+                  <lucide-icon name="trash2" class="w-5 h-5"></lucide-icon>
                 </button>
 
 
@@ -119,12 +118,12 @@
                   class="p-2 text-slate-400 hover:text-orange-600 hover:bg-orange-50 rounded-lg transition-colors"
                   [title]="mod.status === 'suspendu' ? 'Activer' : 'Suspendre'">
                   <lucide-icon [name]="mod.status === 'suspendu' ? 'check-circle' : 'user-minus'"
-                    class="w-4 h-4"></lucide-icon>
+                    class="w-5 h-5"></lucide-icon>
                 </button>
                 <button (click)="viewProfile(mod)"
                   class="p-2 text-slate-400 hover:text-[#478af5] hover:bg-blue-50 rounded-lg transition-colors"
                   title="Voir profil">
-                  <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
+                  <lucide-icon name="eye" class="w-5 h-5"></lucide-icon>
                 </button>
               </div>
             </td>

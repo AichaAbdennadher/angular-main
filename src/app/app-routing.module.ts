@@ -31,7 +31,7 @@ const routes: Routes = [
     children: [
       { path: 'categories', component: AdminCategoriesComponent },
       { path: 'dashboard', component: AdminDashboardComponent },
-      { path: 'moderateurs', component: AdminUsersComponent },
+      { path: 'users', component: AdminUsersComponent },
       { path: 'profil', component: ProfilComponent }
     ]
   },

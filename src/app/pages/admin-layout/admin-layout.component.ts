@@ -16,11 +16,8 @@ export class AdminLayoutComponent {
     const items = [
       { label: 'Dashboard', path: '/admin/dashboard', icon: 'dashboard' },
       { label: 'Catégories', path: '/admin/categories', icon: 'account_tree' },
+      { label: 'Modérateurs', path: '/admin/users', icon: 'people' },
     ];
-
-    if (role === 'admin') {
-      items.splice(1, 0, { label: 'Modérateurs', path: '/admin/users', icon: 'people' });
-    }
 
     return items;
   });
