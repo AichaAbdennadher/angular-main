@@ -1,0 +1,238 @@
+<div class="home-page" *ngIf="user">
+  <div class="home-layout">
+    <main class="feed">
+
+      <!-- TOP SHOWCASE : CATEGORIES + HERO COLLÉS -->
+      <div class="top-showcase">
+
+        <!-- BARRE DES CATEGORIES -->
+        <app-category-bar
+          class="category-bar-host"
+          (categorySelected)="goLogin($event)">
+        </app-category-bar>
+
+        <!-- BANDE BLEUE FORUM ANONYME -->
+        <section class="anonymous-hero">
+          <div class="anonymous-hero-overlay">
+            <div class="anonymous-hero-badge">
+              <i class="fa-solid fa-user-secret"></i>
+              Forum anonyme
+            </div>
+
+            <h1 class="anonymous-hero-title">
+              FORUM DE DISCUSSION ANONYME
+            </h1>
+
+            <p class="anonymous-hero-text">
+              Exprime-toi librement, partage tes idées et échange avec la communauté
+              dans un espace discret, respectueux et 100% orienté discussion anonyme.
+            </p>
+
+            <div class="anonymous-hero-tags">
+              <span class="anonymous-hero-tag">Anonymat protégé</span>
+              <span class="anonymous-hero-tag">Liberté d’expression</span>
+              <span class="anonymous-hero-tag">Communauté respectueuse</span>
+            </div>
+          </div>
+        </section>
+
+      </div>
+      <!-- FIN top-showcase -->
+
+      <!-- Chargement -->
+      <div class="empty-state" *ngIf="loadingPosts">
+        Chargement des publications...
+      </div>
+
+      <!-- Aucun post -->
+      <div class="empty-state" *ngIf="!loadingPosts && filteredPosts.length === 0">
+        Aucune publication pour le moment.
+      </div>
+
+      <!-- POSTS -->
+      <section class="posts-section">
+        <article
+          class="post-card"
+          *ngFor="let post of paginatedPosts"
+          [ngStyle]="{
+            'border-left': getPostCategory(post)
+              ? '6px solid ' + getPostCategoryColor(post)
+              : '6px solid transparent'
+          }"
+        >
+          <!-- HEADER -->
+          <div class="post-header">
+            <div class="post-user">
+              <div class="post-avatar">
+                {{ getInitial(post.user?.pseudo || post.user?.name) }}
+              </div>
+
+              <div class="post-user-meta">
+                <span class="post-author">
+                  {{ formatPseudo(post.user?.pseudo || post.user?.name) }}
+                </span>
+
+                <span class="post-date">
+                  {{ formatDate(post.created_at) }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTENU -->
+          <h3 class="post-title" [title]="post.titre">
+            {{ post.titre }}
+          </h3>
+
+          <p class="post-content">
+            {{ post.contenu }}
+          </p>
+
+          <img
+            *ngIf="post.image"
+            [src]="'http://localhost:8000/storage/' + post.image"
+            class="post-image"
+            alt="Image de publication"
+          />
+
+          <div class="post-divider"></div>
+
+          <!-- FOOTER -->
+          <div class="post-footer">
+
+            <!-- CATÉGORIE -->
+            <div class="post-category-footer" *ngIf="getPostCategory(post) as category">
+              <span
+                class="post-category-badge"
+                [ngStyle]="{
+                  'border-color': getSafeColor(category.color || category.couleur),
+                  'color': getSafeColor(category.color || category.couleur)
+                }"
+                (click)="selectCategory(category.id)"
+              >
+                <mat-icon class="post-category-icon">
+                  {{ category.icon || 'label' }}
+                </mat-icon>
+                {{ category.titre }}
+              </span>
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="post-actions">
+              <button
+                class="icon-btn like-btn"
+                [class.active]="userReactionType(post) === 'like'"
+                (click)="react(post, 'like')"
+                type="button"
+              >
+                <i
+                  class="fa-heart"
+                  [ngClass]="userReactionType(post) === 'like'
+                    ? 'fa-solid liked'
+                    : 'fa-regular'"
+                ></i>
+                <span>{{ countLikes(post) }}</span>
+              </button>
+
+              <button
+                class="icon-btn comment-btn"
+                (click)="toggleComments(post)"
+                type="button"
+              >
+                <i class="fa-regular fa-comment"></i>
+                <span>{{ countComments(post) }}</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- COMMENTAIRES -->
+          <div class="comments-panel" *ngIf="post.showComment">
+            <div
+              class="comments-list"
+              *ngIf="(post.commentaires?.length || 0) > 0; else noComments"
+            >
+              <div class="comment-item" *ngFor="let c of post.commentaires">
+                <div class="comment-box">
+                  <div class="comment-author-line">
+                    <span class="comment-author-name">
+                      {{ formatPseudo(c.user?.pseudo || c.user?.name || c.user_name || c.auteur || c.author_name) }}
+                    </span>
+                    <span class="comment-date">
+                      • {{ formatDate(c.created_at) }}
+                    </span>
+                  </div>
+
+                  <div class="comment-text">
+                    {{ c.contenu }}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <ng-template #noComments>
+              <div class="no-comments">
+                Aucun commentaire pour le moment.
+              </div>
+            </ng-template>
+
+            <div class="comment-form">
+              <input
+                type="text"
+                [(ngModel)]="post.comment"
+                placeholder="Écrire un commentaire..."
+                class="comment-input"
+              />
+
+              <button
+                class="send-comment-btn"
+                (click)="comment(post, post.comment)"
+                [disabled]="!post.comment?.trim()"
+                type="button"
+              >
+                Envoyer
+              </button>
+            </div>
+          </div>
+
+        </article>
+      </section>
+
+      <!-- PAGINATION -->
+      <div class="pagination-wrapper" *ngIf="totalPages > 1">
+        <button
+          class="page-btn nav-btn"
+          (click)="previousPage()"
+          [disabled]="currentPage === 1"
+          type="button"
+          aria-label="Page précédente"
+          title="Précédent"
+        >
+          <i class="fa-solid fa-chevron-left"></i>
+        </button>
+
+        <button
+          class="page-btn"
+          *ngFor="let page of pageNumbers"
+          [class.active]="currentPage === page"
+          (click)="goToPage(page)"
+          type="button"
+        >
+          {{ page }}
+        </button>
+
+        <button
+          class="page-btn nav-btn"
+          (click)="nextPage()"
+          [disabled]="currentPage === totalPages"
+          type="button"
+          aria-label="Page suivante"
+          title="Suivant"
+        >
+          <i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+
+    </main>
+  </div>
+</div>
+

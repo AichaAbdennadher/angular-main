@@ -1,0 +1,35 @@
+
+
+ <nav class="category-bar">
+  <div class="category-bar-inner">
+
+    <!-- Tout -->
+    <button
+      type="button"
+      class="cat-btn all-btn"
+      [class.active-all]="isActive(null)"
+      (click)="selectCategory(null)"
+    >
+      <mat-icon class="cat-icon">public</mat-icon>
+      <span>Tout</span>
+    </button>
+
+    <!-- Catégories -->
+    <button
+      type="button"
+      class="cat-btn"
+      *ngFor="let cat of categories; trackBy: trackByCategory"
+      (click)="selectCategory(cat)"
+      [class.active]="isActive(cat.id)"
+      [ngStyle]="{
+        'border-color': getColor(cat.color),
+        'color': isActive(cat.id) ? '#ffffff' : getColor(cat.color),
+        'background': isActive(cat.id) ? getColor(cat.color) : '#ffffff'
+      }"
+    >
+      <mat-icon class="cat-icon">{{ cat.icon || 'label' }}</mat-icon>
+      <span>{{ cat.titre }}</span>
+    </button>
+
+  </div>
+</nav>  

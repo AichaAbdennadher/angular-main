@@ -1,0 +1,113 @@
+<header class="topbar">
+  <div class="topbar-container">
+
+   <a routerLink="/" class="brand">
+  <img
+    src="assets/images/hidetalk-logo.png"
+    alt="Logo Hidetalk"
+    class="brand-logo"
+  />
+</a>
+
+    <!-- CONNECTÉ -->
+    <div class="topbar-right" *ngIf="user; else guestActions">
+
+      <!-- NOTIFICATIONS -->
+      <div class="notif-box">
+
+        <button
+          type="button"
+          class="notif-btn"
+          (click)="toggleNotifMenu()">
+
+          <mat-icon>notifications_none</mat-icon>
+
+          <span class="notif-count" *ngIf="notifications.length > 0">
+            {{ notifications.length }}
+          </span>
+        </button>
+
+        <!-- PANEL -->
+        <div class="notif-panel" *ngIf="notifOpen">
+
+          <div class="notif-title">
+            Notifications
+          </div>
+
+          <ng-container *ngIf="notifications.length > 0; else noNotif">
+
+            <div class="notif-row" *ngFor="let n of notifications">
+
+              <!-- ICON -->
+              <mat-icon class="notif-icon"
+                        [ngClass]="n.type">
+                {{ n.type === 'like' ? 'thumb_up' : 'comment' }}
+              </mat-icon>
+
+              <!-- TEXTE -->
+              <div class="notif-content">
+
+                <div class="notif-text">
+                  <strong>
+                    {{ n.from_user_name || n.from_user || 'Utilisateur' }}
+                  </strong>
+
+                  <span *ngIf="n.type === 'like'">
+                    a aimé votre post
+                  </span>
+
+                  <span *ngIf="n.type === 'comment'">
+                    a commenté votre post
+                  </span>
+                </div>
+
+                <div class="notif-post">
+                  "{{ n.post_title || 'Post supprimé' }}"
+                </div>
+
+              </div>
+
+              <!-- DELETE -->
+              <button
+                type="button"
+                class="notif-delete"
+                (click)="deleteNotif(n.id)">
+                <mat-icon>close</mat-icon>
+              </button>
+
+            </div>
+
+          </ng-container>
+
+          <!-- EMPTY -->
+          <ng-template #noNotif>
+            <div class="notif-empty">
+              Aucune notification
+            </div>
+          </ng-template>
+
+        </div>
+      </div>
+
+      <!-- USER -->
+     <div class="user-chip" routerLink="/profile" style="cursor:pointer;">
+  <mat-icon>account_circle</mat-icon>
+  <span>{{ user.pseudo || user.name }}</span>
+</div>
+      <!-- LOGOUT -->
+      <button type="button" class="logout-btn" (click)="logout()">
+        Déconnexion
+      </button>
+
+    </div>
+
+    <!-- GUEST -->
+    <ng-template #guestActions>
+      <div class="topbar-right">
+        <a routerLink="/login" class="link-btn primary">Connexion</a>
+        <a routerLink="/register" class="link-btn secondary">Inscription</a>
+      </div>
+    </ng-template>
+
+  </div>
+</header>

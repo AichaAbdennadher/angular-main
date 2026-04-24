@@ -1,0 +1,15 @@
+<ng-container *ngIf="showNavFooter">
+  <app-navbar></app-navbar>
+  
+  <app-category-bar
+    *ngIf="isLoggedIn"
+    (categorySelected)="onCategorySelected($event)">
+  </app-category-bar>
+</ng-container>
+
+<div [class.container]="showNavFooter" [class.mx-auto]="showNavFooter" [class.py-6]="showNavFooter">
+  <router-outlet></router-outlet>
+</div>
+
+<app-footer *ngIf="showNavFooter"></app-footer>
+ 

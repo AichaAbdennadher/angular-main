@@ -1,0 +1,95 @@
+<section class="composer-card">
+  <div class="card-header">
+    <h2>Créer une publication</h2>
+    <p>Exprimez-vous librement sur le forum</p>
+  </div>
+
+  <div class="composer-form">
+    <!-- Titre -->
+    <div class="form-group">
+      <label for="titre">Titre</label>
+      <input
+        id="titre"
+        type="text"
+        [(ngModel)]="postData.titre"
+        placeholder="Donnez un titre à votre publication"
+        class="form-input" />
+    </div>
+
+    <!-- Contenu -->
+    <div class="form-group">
+      <label for="contenu">Contenu</label>
+      <textarea
+        id="contenu"
+        [(ngModel)]="postData.contenu"
+        placeholder="Exprimez-vous..."
+        class="form-textarea"></textarea>
+    </div>
+
+    <!-- Catégorie -->
+    <div class="form-group">
+      <label for="categorie">Catégorie</label>
+      <select
+        id="categorie"
+        [(ngModel)]="postData.categorie_id"
+        class="form-select">
+        <option *ngFor="let cat of categories" [value]="cat.id">
+          {{ cat.titre }}
+        </option>
+      </select>
+    </div>
+
+<!-- Image -->
+<!-- Image -->
+<div class="form-group">
+  <label for="image">Image</label>
+
+  <div class="file-box">
+    <input
+      id="image"
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      class="file-input"
+    />
+
+    <label for="image" class="file-trigger" [class.has-file]="!!selectedFileName">
+      <div class="file-icon-wrap">
+        <i class="fa-regular fa-image file-icon"></i>
+      </div>
+
+      <span class="file-mini-text">
+        {{ selectedFileName ? 'Image ajoutée' : 'Cliquer pour ajouter une image' }}
+      </span>
+
+      <div class="file-status" *ngIf="selectedFileName">
+        <i class="fa-solid fa-check"></i>
+      </div>
+    </label>
+
+   
+  </div>
+</div>
+
+
+
+
+    <!-- Actions -->
+    <div class="form-actions">
+      <button
+        type="button"
+        class="cancel-btn"
+        (click)="onCancel()">
+        Annuler
+      </button>
+
+      <button
+        type="button"
+        class="publish-btn"
+        (click)="submit()"
+        [disabled]="posting">
+        {{ posting ? 'Publication...' : 'Publier' }}
+      </button>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,93 @@
+<div class="min-h-screen bg-slate-50 flex flex-col font-sans">
+  <!-- Top Header -->
+  <header class="sticky top-0 z-50 bg-white border-b border-slate-200 h-16 shrink-0">
+    <div class="max-w-7xl mx-auto h-full px-4 md:px-6 flex items-center justify-between">
+
+      <!-- Left - Logo -->
+      <a routerLink="/moderateur/postes" class="flex items-center gap-3 group shrink-0">
+        <div
+          class="w-10 h-10 bg-[#478af5] rounded-2xl flex items-center justify-center shadow-lg shadow-[#478af5]/20 group-hover:scale-105 transition-transform">
+          <mat-icon class="text-white" [style.font-size.px]="22">visibility</mat-icon>
+        </div>
+        <span class="text-xl font-black text-slate-900 tracking-tight hidden sm:block">
+          Modera<span class="text-[#478af5]">Talk</span>
+        </span>
+      </a>
+
+      <!-- Center - Nav (desktop) -->
+      <nav class="hidden lg:flex items-center space-x-1 h-full">
+        <a *ngFor="let item of navItems()" [routerLink]="item.path" routerLinkActive="active-link" #rla="routerLinkActive"
+          class="relative px-3 flex items-center h-full text-sm font-medium transition-colors text-slate-500 hover:text-slate-900"
+          [ngClass]="{'text-[#478af5]': rla.isActive}">
+          {{ item.label }}
+          <span *ngIf="rla.isActive" class="absolute bottom-0 left-2 right-2 h-0.5 rounded-full bg-[#478af5]"></span>
+        </a>
+      </nav>
+
+      <!-- Right - Avatar + Mobile menu -->
+      <div class="flex items-center space-x-3">
+        <!-- Profile dropdown -->
+        <div class="relative flex items-center">
+          <span class="hidden md:block text-sm font-medium text-slate-700 mr-3">
+            {{ user()?.name || user()?.pseudo || 'Modérateur' }}
+          </span>
+          <button (click)="toggleProfile()"
+            class="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-bold transition-all bg-[#478af5] hover:bg-[#3b74cf] shadow-md active:scale-95 ring-2 ring-white">
+            {{ initials() }}
+          </button>
+
+          <!-- Profile Dropdown Menu -->
+          <div *ngIf="isProfileOpen()"
+            class="absolute right-0 top-full mt-3 w-64 bg-white rounded-2xl shadow-xl border border-slate-200 py-2 z-50 animate-in fade-in zoom-in-95 duration-200">
+            <div class="px-5 py-4 border-b border-slate-100 mb-1">
+              <p class="text-sm font-bold text-slate-900 truncate">{{ user()?.name || user()?.pseudo || 'Modérateur' }}</p>
+              <p class="text-xs text-slate-500 truncate mt-0.5">{{ user()?.email || 'moderateur@example.com' }}</p>
+            </div>
+
+            <button routerLink="/moderateur/profil" (click)="isProfileOpen.set(false)"
+              class="w-full text-left px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center space-x-3 group transition-colors">
+              <mat-icon class="w-5 h-5 text-slate-400 group-hover:text-[#478af5]" [style.font-size.px]="20">person</mat-icon>
+              <span class="font-medium">Mon profil</span>
+            </button>
+
+            <div class="h-px bg-slate-100 my-1 mx-2"></div>
+
+            <button (click)="handleLogout()"
+              class="w-full text-left px-5 py-2.5 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-3 group transition-colors">
+              <mat-icon class="w-5 h-5 text-red-400 group-hover:text-red-600" [style.font-size.px]="20">logout</mat-icon>
+              <span class="font-medium">Déconnexion</span>
+            </button>
+          </div>
+          <!-- Overlay -->
+          <div *ngIf="isProfileOpen()" (click)="toggleProfile()" class="fixed inset-0 z-40 bg-transparent"></div>
+        </div>
+
+        <!-- Mobile hamburger -->
+        <button class="lg:hidden text-slate-500 hover:text-slate-700 p-2 rounded-lg hover:bg-slate-100"
+          (click)="toggleMobileMenu()">
+          <mat-icon class="w-6 h-6">{{ isMobileMenuOpen() ? 'close' : 'menu' }}</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile nav dropdown -->
+    <div *ngIf="isMobileMenuOpen()"
+      class="lg:hidden bg-white border-b border-slate-200 shadow-lg animate-in slide-in-from-top duration-300">
+      <nav class="px-4 py-3 space-y-1">
+        <a *ngFor="let item of navItems()" [routerLink]="item.path" routerLinkActive="bg-slate-50 text-[#478af5]"
+          (click)="toggleMobileMenu()"
+          class="flex items-center space-x-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-600 hover:bg-slate-50">
+          <mat-icon class="w-5 h-5">{{ item.icon }}</mat-icon>
+          <span>{{ item.label }}</span>
+        </a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="flex-1 overflow-auto bg-slate-50/50">
+    <div class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8">
+      <router-outlet></router-outlet>
+    </div>
+  </main>
+</div>

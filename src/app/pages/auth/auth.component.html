@@ -1,0 +1,40 @@
+<div class="min-h-screen flex items-center justify-center bg-slate-50 font-sans p-4">
+  <div class="w-full max-w-5xl flex flex-col md:flex-row bg-white rounded-2xl shadow-xl overflow-hidden">
+
+    <!-- Left side - Image Slideshow -->
+    <div class="md:w-1/2 relative overflow-hidden image-slideshow order-1">
+      <!-- Background gradient -->
+      <div class="absolute inset-0 slideshow-bg"></div>
+
+      <!-- Images container -->
+      <div class="relative w-full h-full flex items-center justify-center p-8">
+        <img
+          *ngFor="let img of images; let i = index"
+          [src]="img"
+          [class.active]="i === currentIndex"
+          class="slide-image"
+          alt="UniHelp illustration"
+        />
+      </div>
+
+      <!-- Slide indicators -->
+      <div class="absolute bottom-6 left-1/2 -translate-x-1/2 flex gap-2 z-20">
+        <span
+          *ngFor="let img of images; let i = index"
+          (click)="goToSlide(i)"
+          class="slide-dot"
+          [class.active]="i === currentIndex"
+        ></span>
+      </div>
+    </div>
+
+    <!-- Right side - Form content -->
+    <div class="md:w-1/2 flex items-center justify-center p-8 md:p-12 bg-white order-2">
+      <div class="w-full max-w-md">
+        <router-outlet></router-outlet>
+        <ng-content></ng-content>
+      </div>
+    </div>
+
+  </div>
+</div>

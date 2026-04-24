@@ -1,0 +1,127 @@
+<div class="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mb-6 transition-all hover:shadow-md">
+  <!-- Header -->
+  <div class="p-5 flex justify-between items-start border-b border-slate-100">
+    <div>
+      <div class="flex items-center gap-3 mb-2">
+        <span class="bg-slate-100 text-slate-600 text-[10px] uppercase tracking-wider px-2 py-1 rounded-md font-bold">
+          {{ category?.titre || 'Général' }}
+        </span>
+        <span class="text-slate-500 text-sm flex items-center gap-1">
+          par 
+          <span [className]="accentText + ' font-bold'">{{ post.auteurPseudo }}</span>
+        </span>
+        <span class="text-slate-400 text-xs font-medium">• {{ formatDate(post.dateCreation) }}</span>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 leading-tight">{{ post.titre }}</h3>
+    </div>
+
+    <button *ngIf="role === 'user'" 
+      [className]="'p-2 text-slate-400 ' + accentHoverText + ' transition-colors rounded-lg hover:bg-slate-50'"
+      title="Signaler">
+      <lucide-icon name="flag" [size]="18"></lucide-icon>
+    </button>
+  </div>
+
+  <!-- Content -->
+  <div class="p-5">
+    <p class="text-slate-600 leading-relaxed mb-4">{{ post.contenu }}</p>
+    
+    <!-- Image -->
+    <div *ngIf="post.image" class="rounded-2xl overflow-hidden border border-slate-100 mb-4 bg-slate-50">
+      <img [src]="post.image" [alt]="post.titre" class="w-full h-auto max-h-[500px] object-cover" />
+    </div>
+
+    <!-- Video -->
+    <div *ngIf="post.videoUrl" class="rounded-2xl overflow-hidden border border-slate-100 mb-4 bg-black aspect-video flex items-center justify-center">
+      <video [src]="post.videoUrl" controls class="w-full h-full max-h-[500px]"></video>
+    </div>
+
+    <!-- Link -->
+    <div *ngIf="post.link" class="mb-4">
+      <a [href]="post.link" target="_blank" class="flex flex-col sm:flex-row items-stretch rounded-2xl border border-slate-100 overflow-hidden hover:border-[#00b1ba]/30 hover:bg-slate-50 transition-all group/link">
+        <div class="p-4 flex-1">
+          <div class="flex items-center gap-2 mb-2 text-[#00b1ba]">
+            <lucide-icon name="compass" [size]="14"></lucide-icon>
+            <span class="text-[10px] font-black uppercase tracking-widest">{{ post.link }}</span>
+          </div>
+          <h4 class="text-sm font-bold text-slate-900 group-hover/link:text-[#00b1ba] transition-colors mb-2">Visiter le lien externe</h4>
+          <p class="text-xs text-slate-500 line-clamp-2">Cliquez pour ouvrir la ressource partagée par {{ post.auteurPseudo }} dans un nouvel onglet.</p>
+        </div>
+        <div class="w-full sm:w-32 bg-slate-100 flex items-center justify-center p-6 sm:p-0">
+          <lucide-icon name="plus" [size]="24" class="text-slate-300 group-hover/link:scale-110 group-hover/link:text-[#00b1ba] transition-all"></lucide-icon>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Actions -->
+  <div class="px-5 py-3 bg-slate-50/50 border-t border-slate-100 flex items-center justify-between">
+    <div class="flex items-center gap-6">
+      <button (click)="onLike()"
+        [className]="'flex items-center gap-2 transition-all group ' + (post.userVote === 'like' ? accentText : 'text-slate-500 ' + accentHoverText)">
+        <lucide-icon name="thumbs-up" [size]="18" [className]="'group-hover:scale-110 transition-transform ' + (post.userVote === 'like' ? 'fill-current' : '')"></lucide-icon>
+        <span class="text-sm font-bold">{{ post.likes }}</span>
+      </button>
+      <button (click)="onDislike()"
+        class="flex items-center gap-2 transition-all group"
+        [className]="'flex items-center gap-2 transition-all group ' + (post.userVote === 'dislike' ? 'text-orange-500' : 'text-slate-500 hover:text-orange-500')">
+        <lucide-icon name="thumbs-down" [size]="18" [className]="'group-hover:scale-110 transition-transform ' + (post.userVote === 'dislike' ? 'fill-current' : '')"></lucide-icon>
+        <span class="text-sm font-bold">{{ post.dislikes }}</span>
+      </button>
+      <button (click)="toggleComments()" 
+        [className]="'flex items-center gap-2 transition-all group ' + (showComments() ? accentText : 'text-slate-500 ' + accentHoverText)">
+        <lucide-icon name="message-square" [size]="18" class="group-hover:scale-110 transition-transform"></lucide-icon>
+        <span class="text-sm font-bold">{{ post.comments.length }}</span>
+      </button>
+    </div>
+
+    <!-- Moderator Actions -->
+    <div *ngIf="role !== 'user'" class="flex items-center gap-2">
+      <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all" title="Supprimer">
+        <lucide-icon name="trash-2" [size]="18"></lucide-icon>
+      </button>
+      <button [className]="'p-2 text-slate-400 ' + accentHoverText + ' hover:bg-amber-50 rounded-xl transition-all'" title="Alerte">
+        <lucide-icon name="shield-alert" [size]="18"></lucide-icon>
+      </button>
+      <button class="p-2 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all" title="Verrouiller">
+        <lucide-icon name="lock" [size]="18"></lucide-icon>
+      </button>
+    </div>
+  </div>
+
+  <!-- Comments Section (simplified animation) -->
+  <div *ngIf="showComments()" class="border-t border-slate-100 bg-slate-50 overflow-hidden">
+    <div class="p-5 space-y-4">
+      <div *ngFor="let comment of post.comments" class="flex gap-3 animate-in fade-in slide-in-from-top-2 duration-300">
+        <div [className]="'w-9 h-9 rounded-xl bg-white border border-slate-100 flex items-center justify-center flex-shrink-0 ' + accentText + ' font-bold text-xs shadow-sm'">
+          {{ comment.auteur.substring(0, 2).toUpperCase() }}
+        </div>
+        <div class="flex-1 bg-white rounded-2xl p-4 border border-slate-100 shadow-sm relative group">
+          <div class="flex justify-between items-start mb-2">
+            <span [className]="'text-sm font-bold ' + accentText">{{ comment.auteur }}</span>
+            <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider">{{ formatDate(comment.date) }}</span>
+          </div>
+          <p class="text-sm text-slate-600 leading-relaxed">{{ comment.contenu }}</p>
+          
+          <button *ngIf="role !== 'user'" 
+            class="absolute top-2 right-2 opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-500 transition-all">
+            <lucide-icon name="trash-2" [size]="14"></lucide-icon>
+          </button>
+        </div>
+      </div>
+
+      <div *ngIf="post.comments.length === 0" class="text-center text-slate-400 text-sm py-4">
+        Aucun commentaire pour le moment. Soyez le premier à réagir !
+      </div>
+
+      <!-- Add Comment Input -->
+      <div class="mt-6 flex gap-3 pt-4 border-t border-slate-200">
+        <input type="text" placeholder="Ajouter un commentaire anonyme..."
+          [className]="'flex-1 bg-white border border-slate-200 rounded-2xl px-5 py-3 text-sm text-slate-900 focus:outline-none transition-all shadow-inner ' + accentBorder" />
+        <button [className]="accentBg + ' text-white px-6 py-3 rounded-2xl text-sm font-bold shadow-lg shadow-primary/20 transition-all hover:-translate-y-0.5'">
+          Envoyer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

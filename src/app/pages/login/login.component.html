@@ -1,0 +1,69 @@
+<div class="mb-10 flex flex-col items-center text-center">
+  <lucide-icon name="message-square" class="text-[#478af5] w-12 h-12 mb-4"></lucide-icon>
+  <span class="text-3xl font-black text-slate-900 tracking-tight">
+    Hide<span class="text-[#478af5]">Talk</span>
+  </span>
+  <p class="mt-4 text-slate-500 text-sm font-medium leading-relaxed max-w-xs">
+    Un espace anonyme pour s’exprimer librement
+  </p>
+</div>
+
+<form (submit)="handleSubmit($event)" class="space-y-6">
+  <div *ngIf="error()" class="p-4 bg-red-50 text-red-600 text-sm rounded-2xl border border-red-100 animate-in fade-in slide-in-from-top-2">
+    {{ error() }}
+  </div>
+
+  <div class="space-y-5">
+    <div>
+      <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2" for="email">
+        Email
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2" />
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+          </svg>
+        </div>
+        <input id="email" name="email" type="email" [(ngModel)]="email"
+          class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-[#478af5] focus:border-transparent outline-none transition-all font-medium"
+          placeholder="Gmail" />
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2" for="password">
+        Mot de passe
+      </label>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+            stroke="#94a3b8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+            <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+          </svg>
+        </div>
+        <input id="password" name="password" type="password" [(ngModel)]="password"
+          class="block w-full pl-11 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:ring-2 focus:ring-[#478af5] focus:border-transparent outline-none transition-all font-medium"
+          placeholder="Mot de passe" />
+      </div>
+    </div>
+  </div>
+
+  <button type="submit" [disabled]="isSubmitting()"
+    class="w-full flex justify-center py-4 px-4 bg-[#478af5] hover:bg-[#3b74cf] text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-900/20 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed">
+    <span *ngIf="isSubmitting()"
+      class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin inline-block mr-2"></span>
+    <span>{{ isSubmitting() ? 'Connexion...' : 'Se connecter' }}</span>
+  </button>
+</form>
+
+<div class="mt-8 text-center">
+  <p class="text-sm text-slate-500 font-medium">
+    Pas encore de compte ?
+    <a routerLink="/register" class="text-[#478af5] hover:underline font-bold transition-colors ml-1">
+      Créer un compte
+    </a>
+  </p>
+</div>

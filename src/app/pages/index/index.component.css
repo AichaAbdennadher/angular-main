@@ -1,0 +1,225 @@
+@import '../home/home.component.css';-hero-text {
+    font-size: 14px;
+  }
+
+  .anonymous-hero-tags {
+    gap: 8px;
+  }
+
+  .anonymous-hero-tag {
+    font-size: 12px;
+    padding: 8px 12px;
+  }
+
+  .posts-section,
+  .pagination-wrapper,
+  .forum-intro,
+  .empty-state {
+    max-width: calc(100% - 24px);
+  }
+
+
+
+/* =========================================================
+   PAGE
+========================================================= */
+.home-page {
+  padding: 0 0 24px;
+  background: #f5f6f8;
+  min-height: 100vh;
+}
+
+.home-layout {
+  max-width: 900px;
+  margin: 0 auto;
+  display: block;
+}
+
+.feed {
+  width: 100%;
+}
+
+/* =========================================================
+   TOP SHOWCASE
+   catégories + hero collés sans espace
+========================================================= */
+.top-showcase {
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  margin-bottom: 22px;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+
+  line-height: 0;
+  background: transparent;
+}
+
+/* host du composant */
+.category-bar-host {
+  display: block;
+  width: 100%;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 0;
+}
+
+/* =========================================================
+   HERO BLEU
+========================================================= */
+.anonymous-hero {
+  position: relative;
+  width: 100%;
+  min-height: 340px;
+  margin: 0 !important;
+  padding: 0;
+  margin-top: -27px !important; /* IMPORTANT : supprime le gris restant */
+  border-radius: 0 0 28px 28px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(255,255,255,0.18), transparent 20%),
+    radial-gradient(circle at 80% 30%, rgba(255,255,255,0.18), transparent 18%),
+    radial-gradient(circle at 50% 70%, rgba(255,255,255,0.12), transparent 18%),
+    linear-gradient(135deg, #8cc8ff 0%, #4d95ff 35%, #2357da 100%);
+  box-shadow: 0 18px 34px rgba(37, 99, 235, 0.18);
+}
+
+.anonymous-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top,
+    rgba(10, 37, 120, 0.28),
+    rgba(255,255,255,0.02)
+  );
+}
+
+.anonymous-hero-overlay {
+  position: relative;
+  z-index: 2;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 38px 24px 34px;
+  min-height: 340px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.anonymous-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.18);
+  border: 1px solid rgba(255,255,255,0.30);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  margin-bottom: 18px;
+  backdrop-filter: blur(6px);
+}
+
+.anonymous-hero-title {
+  margin: 0;
+  font-size: 46px;
+  line-height: 1.04;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  color: #ffffff;
+  text-shadow: 0 6px 18px rgba(15, 23, 42, 0.18);
+}
+
+.anonymous-hero-text {
+  max-width: 800px;
+  margin: 16px auto 0;
+  font-size: 16px;
+  line-height: 1.7;
+  color: rgba(255,255,255,0.96);
+  font-weight: 500;
+}
+
+.anonymous-hero-tags {
+  margin-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+}
+
+.anonymous-hero-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.14);
+  border: 1px solid rgba(255,255,255,0.28);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 700;
+  backdrop-filter: blur(5px);
+}
+
+/* =========================================================
+   POSTS / PAGINATION centrés
+========================================================= */
+.posts-section,
+.pagination-wrapper,
+.empty-state,
+.forum-intro {
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.posts-section {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.pagination-wrapper {
+  margin-top: 24px;
+}
+
+.empty-state {
+  margin-top: 18px;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+@media (max-width: 768px) {
+  .home-page {
+    padding-bottom: 20px;
+  }
+
+  .anonymous-hero {
+    min-height: 260px;
+    margin-top: -10px !important;
+    border-radius: 0 0 20px 20px;
+  }
+
+  .anonymous-hero-overlay {
+    min-height: 260px;
+    padding: 24px 18px;
+  }
+
+  .anonymous-hero-title {
+    font-size: 28px;
+    line-height: 1.08;
+  }
+}

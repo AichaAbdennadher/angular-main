@@ -1,0 +1,300 @@
+.composer-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.06);
+  padding: 24px;
+}
+
+.card-header h2 {
+  margin: 0;
+  font-size: 22px;
+  color: #111827;
+}
+
+.card-header p {
+  margin: 8px 0 0;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.composer-form {
+  margin-top: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+}
+
+.form-textarea {
+  width: 100%;
+  min-height: 120px;
+  padding: 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+  outline: none;
+  resize: vertical;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+}
+
+/* =========================
+   FILE UPLOAD — MINIMAL PRO
+========================= */
+.file-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+/* input caché */
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* carte entière cliquable */
+.file-trigger {
+  position: relative;
+  width: 100%;
+  min-height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 18px;
+  border: 1.5px dashed #cbd5e1;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #ffffff, #f8fafc);
+  cursor: pointer;
+  transition:
+    border-color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.18s ease;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+.file-trigger:hover {
+  border-color: #93c5fd;
+  background: #f8fbff;
+  box-shadow: 0 10px 24px rgba(37, 99, 235, 0.08);
+  transform: translateY(-1px);
+}
+
+.file-trigger.has-file {
+  border-style: solid;
+  border-color: #bfdbfe;
+  background: #eff6ff;
+}
+
+.file-input:focus + .file-trigger {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 4px rgba(96, 165, 250, 0.14);
+}
+
+/* icône centrée */
+.file-icon-wrap {
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  border-radius: 18px;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.file-trigger.has-file .file-icon-wrap {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.file-icon {
+  font-size: 24px;
+}
+
+/* texte minimal */
+.file-mini-text {
+  font-size: 14px;
+  font-weight: 700;
+  color: #475569;
+  line-height: 1.4;
+}
+
+.file-trigger.has-file .file-mini-text {
+  color: #1d4ed8;
+}
+
+/* badge validation */
+.file-status {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #2563eb;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(37, 99, 235, 0.22);
+}
+
+.file-status i {
+  font-size: 12px;
+}
+
+/* nom du fichier */
+.file-name {
+  font-size: 13px;
+  color: #475569;
+  line-height: 1.4;
+  word-break: break-word;
+  text-align: center;
+}
+
+.file-name.empty {
+  color: #94a3b8;
+}
+
+/* mobile */
+@media (max-width: 576px) {
+  .file-trigger {
+    min-height: 104px;
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .file-icon-wrap {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    border-radius: 16px;
+  }
+
+  .file-icon {
+    font-size: 20px;
+  }
+
+  .file-mini-text {
+    font-size: 13px;
+  }
+
+  .file-name {
+    font-size: 12px;
+  }
+}
+
+
+.error-box {
+  background: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cancel-btn,
+.publish-btn {
+  height: 46px;
+  border: none;
+  border-radius: 12px;
+  padding: 0 18px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.cancel-btn {
+  background: #f3f4f6;
+  color: #111827;
+}
+
+.cancel-btn:hover {
+  background: #e5e7eb;
+}
+
+.publish-btn {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+.publish-btn:hover:not(:disabled) {
+  background: #1d4ed8;
+  transform: translateY(-1px);
+}
+
+.publish-btn:disabled {
+  background: #93c5fd;
+  cursor: not-allowed;
+}
+
+@media (max-width: 576px) {
+  .composer-card {
+    padding: 18px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .cancel-btn,
+  .publish-btn {
+    width: 100%;
+  }
+}

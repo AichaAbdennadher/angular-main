@@ -1,0 +1,28 @@
+/* Uiverse Folder Animation Styles */
+.file {
+  transition: all 0.3s ease;
+}
+
+.work-5 {
+  transform-origin: top;
+  transition: all 0.3s ease;
+}
+
+/* Hover effects for the folder */
+.group:hover .work-4 {
+  transform: rotateX(-20deg);
+}
+.group:hover .work-3 {
+  transform: rotateX(-30deg);
+}
+.group:hover .work-2 {
+  transform: rotateX(-38deg);
+}
+.group:hover .work-1 {
+  transform: rotateX(-46deg) translateY(1px);
+  box-shadow: inset 0 20px 40px rgba(255,255,255,0.3), inset 0 -20px 40px rgba(0,0,0,0.1);
+}
+
+.group:hover .work-5 {
+  box-shadow: 0 20px 40px rgba(0,0,0,.2);
+}
