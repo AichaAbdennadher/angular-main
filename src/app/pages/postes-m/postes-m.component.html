@@ -64,8 +64,10 @@
               <div class="space-y-1">
                 <div class="flex items-center gap-2">
                   <div *ngIf="post.titre" class="font-bold text-slate-800 line-clamp-1">{{ post.titre }}</div>
-                  <lucide-icon *ngIf="post.is_locked" name="message-square-off" class="w-3.5 h-3.5 text-red-400" title="Commentaires bloqués"></lucide-icon>
-                  <lucide-icon *ngIf="post.is_hidden" name="eye-off" class="w-3.5 h-3.5 text-orange-400" title="Masqué"></lucide-icon>
+                  <lucide-icon *ngIf="post.is_locked" name="message-square-lock" class="w-3.5 h-3.5 text-blue-400"
+                    title="Sujet fermé"></lucide-icon>
+                  <lucide-icon *ngIf="post.is_hidden" name="eye-off" class="w-3.5 h-3.5 text-amber-400"
+                    title="Masqué"></lucide-icon>
                 </div>
               </div>
             </td>
@@ -104,36 +106,35 @@
             <td class="px-6 py-4">
               <div class="flex items-center justify-end gap-2">
                 <!-- Masquer/Afficher -->
-                <button (click)="toggleHide(post.id)"
-                  class="p-2 transition-all rounded-xl"
-                  [ngClass]="post.is_hidden ? 'text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
-                  [title]="post.is_hidden ? 'Afficher le post' : 'Masquer le post'">
-                  <lucide-icon [name]="post.is_hidden ? 'eye-off' : 'eye'" class="w-4 h-4"></lucide-icon>
+                <button (click)="toggleHide(post.id)" class="p-2 rounded-lg transition-colors"
+                  [ngClass]="post.is_hidden ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'"
+                  [title]="post.is_hidden ? 'Afficher le contenu' : 'Masquer le contenu'">
+                  <lucide-icon [name]="post.is_hidden ? 'eye' : 'eye-off'" class="w-5 h-5"></lucide-icon>
                 </button>
 
                 <!-- Verrouiller/Déverrouiller -->
-                <button (click)="toggleLock(post.id)"
-                  class="p-2 transition-all rounded-xl"
-                  [ngClass]="post.is_locked ? 'text-red-500 hover:bg-red-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
-                  [title]="post.is_locked ? 'Ouvrir les commentaires' : 'Fermer le sujet'">
-                  <lucide-icon [name]="post.is_locked ? 'message-square-off' : 'message-square'" class="w-4 h-4"></lucide-icon>
+                <button (click)="toggleLock(post.id)" class="p-2 rounded-lg transition-colors"
+                  [ngClass]="post.is_locked ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-slate-400 hover:text-blue-600 hover:bg-blue-50'"
+                  [title]="post.is_locked ? 'Ouvrir le sujet' : 'Fermer le sujet'">
+                  <lucide-icon [name]="post.is_locked ? 'message-square' : 'message-square-lock'"
+                    class="w-5 h-5"></lucide-icon>
                 </button>
 
                 <button (click)="deletePost(post.id)"
                   class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                   title="Supprimer le post">
-                  <lucide-icon name="trash2" class="w-4 h-4"></lucide-icon>
+                  <lucide-icon name="trash2" class="w-5 h-5"></lucide-icon>
                 </button>
                 <button (click)="toggleStatus(post)" class="p-2 transition-colors rounded-lg"
-                  [ngClass]="post.user?.status === 'suspendu' ? 'text-green-600 hover:bg-green-50' : 'text-orange-400 hover:text-orange-600 hover:bg-orange-50'"
+                  [ngClass]="post.user?.status === 'suspendu' ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'"
                   [title]="post.user?.status === 'suspendu' ? 'Réactiver l\'utilisateur' : 'Suspendre l\'utilisateur'">
                   <lucide-icon [name]="post.user?.status === 'suspendu' ? 'check-circle' : 'user-minus'"
-                    class="w-4 h-4"></lucide-icon>
+                    class="w-5 h-5"></lucide-icon>
                 </button>
                 <button (click)="viewPost(post.id)"
                   class="p-2 text-slate-400 hover:text-[#478af5] hover:bg-blue-50 rounded-lg transition-colors"
                   title="Voir le post">
-                  <lucide-icon name="eye" class="w-4 h-4"></lucide-icon>
+                  <lucide-icon name="eye" class="w-5 h-5"></lucide-icon>
                 </button>
               </div>
             </td>
@@ -200,24 +201,20 @@
 
           <div class="flex gap-2">
             <!-- Bloquer/Débloquer (Masquer) -->
-            <button (click)="toggleHide(selectedPost().id)" 
-              class="p-2 transition-all rounded-xl hover:bg-slate-100"
-              [ngClass]="selectedPost().is_hidden ? 'text-orange-500 bg-orange-50' : 'text-slate-400'"
-              [title]="selectedPost().is_hidden ? 'Afficher le post' : 'Masquer le post'">
-              <lucide-icon [name]="selectedPost().is_hidden ? 'eye-off' : 'eye'" [size]="20"></lucide-icon>
+            <button (click)="toggleHide(selectedPost().id)" class="p-2 rounded-lg transition-colors"
+              [ngClass]="selectedPost().is_hidden ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'"
+              [title]="selectedPost().is_hidden ? 'Afficher le contenu' : 'Masquer le contenu'">
+              <lucide-icon [name]="selectedPost().is_hidden ? 'eye' : 'eye-off'" [size]="20"></lucide-icon>
             </button>
 
             <!-- Fermer/Ouvrir sujet (Commentaires) -->
-            <button (click)="toggleLock(selectedPost().id)" 
-              class="p-2 transition-all rounded-xl hover:bg-slate-100"
-              [ngClass]="selectedPost().is_locked ? 'text-red-500 bg-red-50' : 'text-slate-400'"
-              [title]="selectedPost().is_locked ? 'Ouvrir les commentaires' : 'Fermer le sujet (bloquer comm.)'">
-              <lucide-icon [name]="selectedPost().is_locked ? 'message-square-off' : 'message-square'" [size]="20"></lucide-icon>
+            <button (click)="toggleLock(selectedPost().id)" class="p-2 transition-all rounded-xl"
+              [ngClass]="selectedPost().is_locked ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-slate-400 hover:bg-slate-50'"
+              [title]="selectedPost().is_locked ? 'Ouvrir le sujet' : 'Fermer le sujet'">
+              <lucide-icon [name]="selectedPost().is_locked ? 'message-square' : 'message-square-lock'"
+                [size]="20"></lucide-icon>
             </button>
 
-            <button class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
-              <lucide-icon name="flag" [size]="20"></lucide-icon>
-            </button>
           </div>
         </div>
 
