@@ -22,4 +22,12 @@ export class PostService {
   deletePost(id: number): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  toggleLock(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/toggle-lock`, {});
+  }
+
+  toggleHide(id: number): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${id}/toggle-hide`, {});
+  }
 }

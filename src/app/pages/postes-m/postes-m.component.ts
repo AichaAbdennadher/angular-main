@@ -2,6 +2,7 @@ import { Component, OnInit, signal, computed } from '@angular/core';
 import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { DashboardService } from '../../services/dashboard.service';
+import { CommentService } from '../../services/comment.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -60,7 +61,8 @@ export class PostesMComponent implements OnInit {
   constructor(
     private postService: PostService,
     private authService: AuthService,
-    private dashboardService: DashboardService
+    private dashboardService: DashboardService,
+    private commentService: CommentService
   ) {}
 
   ngOnInit(): void {
@@ -191,5 +193,65 @@ export class PostesMComponent implements OnInit {
   showNotification(message: string, type: 'success' | 'error' | 'info' = 'success') {
     this.notification.set({ message, type });
     setTimeout(() => this.notification.set(null), 3000);
+  }
+
+  deleteComment(commentId: number): void {
+    if (confirm('Supprimer ce commentaire ?')) {
+      this.commentService.deleteComment(commentId).subscribe({
+        next: () => {
+          if (this.selectedPost()) {
+            this.selectedPost.update(p => ({
+              ...p,
+              commentaires: p.commentaires.filter((c: any) => c.id !== commentId)
+            }));
+          }
+          // Update in main list too
+          this.posts.update(all => all.map(p => {
+            if (p.commentaires) {
+              return { ...p, commentaires: p.commentaires.filter((c: any) => c.id !== commentId) };
+            }
+            return p;
+          }));
+          this.showNotification('Commentaire supprimé');
+        },
+        error: (err) => {
+          console.error('Erreur suppression commentaire', err);
+          this.showNotification('Erreur lors de la suppression', 'error');
+        }
+      });
+    }
+  }
+
+  toggleLock(postId: number): void {
+    this.postService.toggleLock(postId).subscribe({
+      next: (res) => {
+        this.updatePostStatus(postId, { is_locked: res.is_locked });
+        this.showNotification(res.message);
+      },
+      error: (err) => {
+        console.error('Erreur toggle lock', err);
+        this.showNotification('Erreur lors de la modification', 'error');
+      }
+    });
+  }
+
+  toggleHide(postId: number): void {
+    this.postService.toggleHide(postId).subscribe({
+      next: (res) => {
+        this.updatePostStatus(postId, { is_hidden: res.is_hidden });
+        this.showNotification(res.message);
+      },
+      error: (err) => {
+        console.error('Erreur toggle hide', err);
+        this.showNotification('Erreur lors de la modification', 'error');
+      }
+    });
+  }
+
+  private updatePostStatus(postId: number, updates: any): void {
+    this.posts.update(all => all.map(p => p.id === postId ? { ...p, ...updates } : p));
+    if (this.selectedPost()?.id === postId) {
+      this.selectedPost.update(p => ({ ...p, ...updates }));
+    }
   }
 }

@@ -62,7 +62,11 @@
             <td class="px-6 py-4 font-mono text-slate-400">{{ post.id }}</td>
             <td class="px-6 py-4 max-w-md">
               <div class="space-y-1">
-                <div *ngIf="post.titre" class="font-bold text-slate-800 line-clamp-1">{{ post.titre }}</div>
+                <div class="flex items-center gap-2">
+                  <div *ngIf="post.titre" class="font-bold text-slate-800 line-clamp-1">{{ post.titre }}</div>
+                  <lucide-icon *ngIf="post.is_locked" name="message-square-off" class="w-3.5 h-3.5 text-red-400" title="Commentaires bloqués"></lucide-icon>
+                  <lucide-icon *ngIf="post.is_hidden" name="eye-off" class="w-3.5 h-3.5 text-orange-400" title="Masqué"></lucide-icon>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4">
@@ -99,6 +103,22 @@
             <!-- Actions -->
             <td class="px-6 py-4">
               <div class="flex items-center justify-end gap-2">
+                <!-- Masquer/Afficher -->
+                <button (click)="toggleHide(post.id)"
+                  class="p-2 transition-all rounded-xl"
+                  [ngClass]="post.is_hidden ? 'text-orange-500 hover:bg-orange-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  [title]="post.is_hidden ? 'Afficher le post' : 'Masquer le post'">
+                  <lucide-icon [name]="post.is_hidden ? 'eye-off' : 'eye'" class="w-4 h-4"></lucide-icon>
+                </button>
+
+                <!-- Verrouiller/Déverrouiller -->
+                <button (click)="toggleLock(post.id)"
+                  class="p-2 transition-all rounded-xl"
+                  [ngClass]="post.is_locked ? 'text-red-500 hover:bg-red-50' : 'text-slate-400 hover:text-slate-600 hover:bg-slate-50'"
+                  [title]="post.is_locked ? 'Ouvrir les commentaires' : 'Fermer le sujet'">
+                  <lucide-icon [name]="post.is_locked ? 'message-square-off' : 'message-square'" class="w-4 h-4"></lucide-icon>
+                </button>
+
                 <button (click)="deletePost(post.id)"
                   class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                   title="Supprimer le post">
@@ -178,9 +198,27 @@
             <h2 class="text-2xl font-black text-slate-900 leading-tight">{{ selectedPost().titre }}</h2>
           </div>
 
-          <button class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
-            <lucide-icon name="flag" [size]="20"></lucide-icon>
-          </button>
+          <div class="flex gap-2">
+            <!-- Bloquer/Débloquer (Masquer) -->
+            <button (click)="toggleHide(selectedPost().id)" 
+              class="p-2 transition-all rounded-xl hover:bg-slate-100"
+              [ngClass]="selectedPost().is_hidden ? 'text-orange-500 bg-orange-50' : 'text-slate-400'"
+              [title]="selectedPost().is_hidden ? 'Afficher le post' : 'Masquer le post'">
+              <lucide-icon [name]="selectedPost().is_hidden ? 'eye-off' : 'eye'" [size]="20"></lucide-icon>
+            </button>
+
+            <!-- Fermer/Ouvrir sujet (Commentaires) -->
+            <button (click)="toggleLock(selectedPost().id)" 
+              class="p-2 transition-all rounded-xl hover:bg-slate-100"
+              [ngClass]="selectedPost().is_locked ? 'text-red-500 bg-red-50' : 'text-slate-400'"
+              [title]="selectedPost().is_locked ? 'Ouvrir les commentaires' : 'Fermer le sujet (bloquer comm.)'">
+              <lucide-icon [name]="selectedPost().is_locked ? 'message-square-off' : 'message-square'" [size]="20"></lucide-icon>
+            </button>
+
+            <button class="p-2 text-slate-400 hover:text-slate-600 transition-colors">
+              <lucide-icon name="flag" [size]="20"></lucide-icon>
+            </button>
+          </div>
         </div>
 
         <!-- Post Content -->
@@ -230,8 +268,9 @@
               <p class="text-sm text-slate-600 leading-relaxed">{{ comment.contenu }}</p>
 
               <!-- Moderator Action on Comment -->
-              <button (click)="showNotification('Action sur le commentaire non implémentée', 'info')"
-                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-500 transition-all">
+              <button (click)="deleteComment(comment.id)"
+                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-500 transition-all"
+                title="Supprimer ce commentaire">
                 <lucide-icon name="trash2" [size]="14"></lucide-icon>
               </button>
             </div>
