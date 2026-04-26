@@ -30,7 +30,7 @@ export class AdminCategoriesComponent implements OnInit {
   ];
 
   availableColors = [
-    '#1d4b99', '#00b1ba', '#ef4444', '#10b981', '#f59e0b', '#6366f1', '#8b5cf6', 
+    '#478af5', '#00b1ba', '#ef4444', '#10b981', '#f59e0b', '#6366f1', '#8b5cf6', 
     '#ec4899', '#64748b', '#22c55e', '#3b82f6', '#f43f5e', '#a855f7', '#06b6d4'
   ];
 
@@ -73,7 +73,7 @@ export class AdminCategoriesComponent implements OnInit {
     titre: '',
     description: '',
     icon: '',
-    color: '#1d4b99'
+    color: '#478af5'
   };
 
 
@@ -98,7 +98,7 @@ export class AdminCategoriesComponent implements OnInit {
       titre: '',
       description: '',
       icon: '',
-      color: '#1d4b99'
+      color: '#478af5'
     };
     this.isModalOpen = true;
   }

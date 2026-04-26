@@ -11,7 +11,7 @@ export class ProfilComponent implements OnInit {
   showToast = signal<boolean>(false);
   isEditing = signal<boolean>(false);
   user = computed(() => this.authService.user());
-  
+
   // this code 
   coverImage = computed(() => {
     const role = this.user()?.role?.toLowerCase();
@@ -29,7 +29,7 @@ export class ProfilComponent implements OnInit {
     }
   };
 
-  constructor(public authService: AuthService) {}
+  constructor(public authService: AuthService) { }
 
   ngOnInit(): void {
     // Initial load handled by AuthService
@@ -38,7 +38,7 @@ export class ProfilComponent implements OnInit {
   startEdit(): void {
     const user = this.authService.user();
     if (user) {
-      this.editForm.value = { 
+      this.editForm.value = {
         name: user.name || '',
         pseudo: user.pseudo || '',
         email: user.email || ''

@@ -1,19 +1,19 @@
 <div class="space-y-6 animate-in fade-in duration-500">
   <div class="space-y-4 mb-8">
-    <h1 class="text-3xl font-black text-slate-900 tracking-tight">Liste des Catégories</h1>
+    <h1 class="text-2xl font-bold text-slate-900">Liste des Catégories</h1>
   </div>
 
   <div class="bg-white rounded-[32px] border border-slate-100 shadow-sm overflow-hidden">
     <!-- Filters & Search -->
-    <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-20">
+    <div
+      class="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4 relative z-20">
       <!-- Search Input -->
-      <div class="relative w-full sm:max-w-md group flex items-center gap-2">
+      <div class="relative w-full sm:flex-1 group flex items-center gap-2">
         <div class="relative flex-1">
           <lucide-icon name="search"
-            class="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 group-focus-within:text-[#1d4b99] transition-colors"></lucide-icon>
-          <input type="text" placeholder="Rechercher une catégorie..." [(ngModel)]="searchQuery"
-            (ngModelChange)="currentPage = 1"
-            class="w-full pl-11 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-[#1d4b99]/10 focus:border-[#1d4b99] outline-none transition-all" />
+            class="w-5 h-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400"></lucide-icon>
+          <input type="text" placeholder="Rechercher" [(ngModel)]="searchQuery" (ngModelChange)="currentPage = 1"
+            class="w-full pl-11 pr-4 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#478af5] outline-none transition-all" />
         </div>
 
         <!-- Reset Button -->
@@ -26,7 +26,7 @@
 
       <!-- Add Button -->
       <button (click)="openAddModal()"
-        class="bg-[#1d4b99] hover:bg-[#153c80] text-white px-5 py-2.5 rounded-xl font-bold flex items-center justify-center gap-2 transition-all shadow-sm active:scale-95 shrink-0">
+        class="flex items-center gap-2 bg-[#478af5] text-white px-5 py-2 rounded-lg font-bold text-sm hover:bg-[#3b74cf] transition-all shadow-md active:scale-95 whitespace-nowrap">
         <lucide-icon name="plus" class="w-4 h-4"></lucide-icon>
         <span class="text-sm">Ajouter</span>
       </button>
@@ -36,7 +36,7 @@
       <table class="w-full text-left text-sm text-slate-600">
         <thead class="text-[11px] text-slate-400 uppercase tracking-widest bg-slate-50/50 border-b border-slate-100">
           <tr>
-            <th class="px-6 py-5 font-bold">#</th>
+            <th class="px-6 py-5 font-bold">ID</th>
             <th class="px-6 py-5 font-bold">Catégorie</th>
             <th class="px-6 py-5 font-bold">Description</th>
             <th class="px-6 py-5 font-bold text-center">Actions</th>
@@ -62,12 +62,11 @@
               <div class="flex items-center justify-end gap-1">
                 <button (click)="openEditModal(cat)"
                   class="p-2 text-slate-400 hover:text-[#1d4b99] transition-all rounded-lg hover:bg-blue-50">
-                  <i class="material-icons" style="font-size: 18px;">edit</i>
+                  <lucide-icon name="edit" class="w-5 h-5"></lucide-icon>
                 </button>
                 <button (click)="openDeleteModal(cat.id)"
                   class="p-2 text-slate-400 hover:text-red-600 transition-all rounded-lg hover:bg-red-50">
-                  <i class="material-icons" style="font-size: 18px;">delete</i>
-                </button>
+                  <lucide-icon name="trash2" class="w-5 h-5"></lucide-icon> </button>
               </div>
             </td>
           </tr>
@@ -85,134 +84,139 @@
   class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-300">
 
   <div
-    class="bg-white rounded-3xl shadow-2xl w-full max-w-lg animate-in fade-in slide-in-from-top-12 duration-500 border border-slate-100 relative overflow-hidden">
+    class="bg-white rounded-2xl shadow-xl w-full max-w-lg animate-in fade-in slide-in-from-top-12 duration-500 border border-slate-100 relative overflow-hidden">
     <!-- Header -->
-    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+    <div class="px-6 py-4 border-b border-slate-200 flex items-center justify-between bg-slate-50/50">
       <div>
-        <h3 class="text-lg font-bold text-slate-900">{{ isEditing ? 'Modifier la Catégorie' : 'Nouvelle Catégorie' }}
+        <h3 class="text-lg font-extrabold text-slate-900">{{ isEditing ? 'Modifier la Catégorie' : 'Nouvelle Catégorie'
+          }}
         </h3>
       </div>
       <button (click)="closeModal()"
         class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-200 transition-colors">
-        <i class="material-icons">close</i>
+        <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
       </button>
     </div>
 
     <!-- Form -->
-    <form (ngSubmit)="submitForm()" class="p-8 space-y-6">
-      <div class="space-y-4">
-        <!-- Titre -->
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">Titre</label>
-          <input type="text" [(ngModel)]="categoryForm.titre" name="titre" required placeholder="titre"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300">
-        </div>
+    <form (ngSubmit)="submitForm()" class="flex flex-col h-full">
+      <div class="p-8 space-y-6 flex-1">
+        <div class="space-y-4">
+          <!-- Titre -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Titre</label>
+            <input type="text" [(ngModel)]="categoryForm.titre" name="titre" required placeholder="titre"
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300">
+          </div>
 
-        <!-- Description -->
-        <div>
-          <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
-          <textarea [(ngModel)]="categoryForm.description" name="description" rows="3"
-            placeholder="Description de la catégorie"
-            class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300 resize-none"></textarea>
-        </div>
+          <!-- Description -->
+          <div>
+            <label class="block text-sm font-semibold text-slate-700 mb-2">Description</label>
+            <textarea [(ngModel)]="categoryForm.description" name="description" rows="3"
+              placeholder="Description de la catégorie"
+              class="w-full px-4 py-3 rounded-xl border border-slate-200 focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all placeholder:text-slate-300 resize-none"></textarea>
+          </div>
 
-        <div class="flex flex-col sm:flex-row items-end gap-6 sm:gap-12">
-          <!-- Icon Picker (Reduced width) -->
-          <div class="relative sm:w-[280px] w-full shrink-0">
-            <label class="block text-sm font-semibold text-slate-700 mb-3">Icône</label>
-            <div class="relative group">
-              <div
-                class="absolute left-1 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-xl flex items-center justify-center transition-all bg-white shadow-sm border border-slate-100 overflow-hidden cursor-pointer z-[52] pointer-events-auto"
-                (click)="isIconDropdownOpen = !isIconDropdownOpen" [style.color]="categoryForm.color">
+          <div class="flex flex-col sm:flex-row items-end gap-6 sm:gap-12">
+            <!-- Icon Picker (Reduced width) -->
+            <div class="relative sm:w-[280px] w-full shrink-0">
+              <label class="block text-sm font-semibold text-slate-700 mb-3">Icône</label>
+              <div class="relative group">
+                <div
+                  class="absolute left-1 top-1/2 -translate-y-1/2 w-[52px] h-[52px] rounded-xl flex items-center justify-center transition-all bg-white shadow-sm border border-slate-100 overflow-hidden cursor-pointer z-[52] pointer-events-auto"
+                  (click)="isIconDropdownOpen = !isIconDropdownOpen" [style.color]="categoryForm.color">
 
-                <!-- Icon exists -->
-                <i *ngIf="categoryForm.icon" class="material-icons" style="font-size: 32px;">{{ categoryForm.icon }}</i>
+                  <!-- Icon exists -->
+                  <i *ngIf="categoryForm.icon" class="material-icons" style="font-size: 32px;">{{ categoryForm.icon
+                    }}</i>
 
-                <!-- Default state (Uiverse Animation scaled) -->
-                <div *ngIf="!categoryForm.icon" class="scale-[0.18] flex items-center justify-center">
-                  <section class="relative flex flex-col items-center justify-center w-60 h-40">
-                    <div class="file relative w-60 h-40 cursor-pointer origin-bottom [perspective:1500px] z-50">
-                      <div
-                        class="work-5 w-full h-full origin-top rounded-2xl rounded-tl-none relative after:absolute after:content-[''] after:bottom-[99%] after:left-0 after:w-20 after:h-4 after:rounded-t-2xl before:absolute before:content-[''] before:-top-[15px] before:left-[75.5px] before:w-4 before:h-4 before:[clip-path:polygon(0_35%,0%_100%,50%_100%);]"
-                        style="background-color: #a4bdea;">
+                  <!-- Default state (Uiverse Animation scaled) -->
+                  <div *ngIf="!categoryForm.icon" class="scale-[0.18] flex items-center justify-center">
+                    <section class="relative flex flex-col items-center justify-center w-60 h-40">
+                      <div class="file relative w-60 h-40 cursor-pointer origin-bottom [perspective:1500px] z-50">
                         <div
-                          class="absolute inset-0 after:absolute after:content-[''] after:bottom-[99%] after:left-0 after:w-20 after:h-4 after:rounded-t-2xl after:bg-[#a4bdea] before:absolute before:content-[''] before:-top-[15px] before:left-[75.5px] before:w-4 before:h-4 before:bg-[#a4bdea]">
+                          class="work-5 w-full h-full origin-top rounded-2xl rounded-tl-none relative after:absolute after:content-[''] after:bottom-[99%] after:left-0 after:w-20 after:h-4 after:rounded-t-2xl before:absolute before:content-[''] before:-top-[15px] before:left-[75.5px] before:w-4 before:h-4 before:[clip-path:polygon(0_35%,0%_100%,50%_100%);]"
+                          style="background-color: #a4bdea;">
+                          <div
+                            class="absolute inset-0 after:absolute after:content-[''] after:bottom-[99%] after:left-0 after:w-20 after:h-4 after:rounded-t-2xl after:bg-[#a4bdea] before:absolute before:content-[''] before:-top-[15px] before:left-[75.5px] before:w-4 before:h-4 before:bg-[#a4bdea]">
+                          </div>
+                        </div>
+                        <div
+                          class="work-4 absolute inset-1 bg-zinc-400 rounded-2xl transition-all ease duration-300 origin-bottom select-none">
+                        </div>
+                        <div
+                          class="work-3 absolute inset-1 bg-zinc-300 rounded-2xl transition-all ease duration-300 origin-bottom">
+                        </div>
+                        <div
+                          class="work-2 absolute inset-1 bg-zinc-200 rounded-2xl transition-all ease duration-300 origin-bottom">
+                        </div>
+                        <div
+                          class="work-1 absolute bottom-0 w-full h-[156px] rounded-2xl rounded-tr-none after:absolute after:content-[''] after:bottom-[99%] after:right-0 after:w-[146px] after:h-[16px] after:rounded-t-2xl before:absolute before:content-[''] before:-top-[10px] before:right-[142px] before:size-3 before:[clip-path:polygon(100%_14%,50%_100%,100%_100%);] origin-bottom shadow-[inset_0_20px_40px_rgba(255,255,255,0.3),_inset_0_-20px_40px_rgba(0,0,0,0.1)]"
+                          style="background-color: #a4bdea;">
+                          <div
+                            class="absolute inset-0 after:absolute after:content-[''] after:bottom-[99%] after:right-0 after:w-[146px] after:h-[16px] after:rounded-t-2xl after:bg-[#a4bdea] before:absolute before:content-[''] before:-top-[10px] before:right-[142px] before:size-3 before:bg-[#a4bdea]">
+                          </div>
                         </div>
                       </div>
-                      <div
-                        class="work-4 absolute inset-1 bg-zinc-400 rounded-2xl transition-all ease duration-300 origin-bottom select-none">
-                      </div>
-                      <div
-                        class="work-3 absolute inset-1 bg-zinc-300 rounded-2xl transition-all ease duration-300 origin-bottom">
-                      </div>
-                      <div
-                        class="work-2 absolute inset-1 bg-zinc-200 rounded-2xl transition-all ease duration-300 origin-bottom">
-                      </div>
-                      <div
-                        class="work-1 absolute bottom-0 w-full h-[156px] rounded-2xl rounded-tr-none after:absolute after:content-[''] after:bottom-[99%] after:right-0 after:w-[146px] after:h-[16px] after:rounded-t-2xl before:absolute before:content-[''] before:-top-[10px] before:right-[142px] before:size-3 before:[clip-path:polygon(100%_14%,50%_100%,100%_100%);] origin-bottom shadow-[inset_0_20px_40px_rgba(255,255,255,0.3),_inset_0_-20px_40px_rgba(0,0,0,0.1)]"
-                        style="background-color: #a4bdea;">
-                        <div
-                          class="absolute inset-0 after:absolute after:content-[''] after:bottom-[99%] after:right-0 after:w-[146px] after:h-[16px] after:rounded-t-2xl after:bg-[#a4bdea] before:absolute before:content-[''] before:-top-[10px] before:right-[142px] before:size-3 before:bg-[#a4bdea]">
-                        </div>
-                      </div>
-                    </div>
-                  </section>
+                    </section>
+                  </div>
+                </div>
+                <input type="text" [(ngModel)]="iconSearchQuery" name="iconSearch" (focus)="isIconDropdownOpen = true"
+                  placeholder="Rechercher"
+                  class="w-full pl-20 pr-10 h-[60px] rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium text-slate-700 shadow-sm">
+                <i
+                  class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#1d4b99] transition-colors pointer-events-none">
+                  {{ isIconDropdownOpen ? 'expand_less' : 'expand_more' }}</i>
+              </div>
+
+              <!-- Icon Dropdown Menu -->
+              <div *ngIf="isIconDropdownOpen"
+                class="absolute left-0 right-0 top-full mt-2 bg-white rounded-3xl shadow-2xl border border-slate-100 z-[60] p-4 animate-in slide-in-from-top-2 duration-200">
+                <div class="grid grid-cols-4 gap-4 max-h-60 overflow-y-auto p-1 custom-scrollbar">
+                  <button type="button" *ngFor="let icon of filteredIcons" (click)="selectIcon(icon)"
+                    class="p-4 rounded-2xl hover:bg-slate-100 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group"
+                    [class.bg-blue-50]="categoryForm.icon === icon" [title]="icon">
+                    <i class="material-icons text-slate-500 group-hover:text-[#1d4b99]" style="font-size: 28px;">{{ icon
+                      }}</i>
+                  </button>
                 </div>
               </div>
-              <input type="text" [(ngModel)]="iconSearchQuery" name="iconSearch" (focus)="isIconDropdownOpen = true"
-                placeholder="Rechercher"
-                class="w-full pl-20 pr-10 h-[60px] rounded-2xl border border-slate-200 bg-slate-50/50 focus:bg-white focus:border-[#1d4b99] focus:ring-4 focus:ring-blue-500/10 outline-none transition-all font-medium text-slate-700 shadow-sm">
-              <i
-                class="material-icons absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#1d4b99] transition-colors pointer-events-none">
-                {{ isIconDropdownOpen ? 'expand_less' : 'expand_more' }}</i>
+              <!-- Overlay for closing dropdown -->
+              <div *ngIf="isIconDropdownOpen" (click)="isIconDropdownOpen = false"
+                class="fixed inset-0 z-[55] bg-transparent"></div>
             </div>
 
-            <!-- Icon Dropdown Menu -->
-            <div *ngIf="isIconDropdownOpen"
-              class="absolute left-0 right-0 top-full mt-2 bg-white rounded-3xl shadow-2xl border border-slate-100 z-[60] p-4 animate-in slide-in-from-top-2 duration-200">
-              <div class="grid grid-cols-4 gap-4 max-h-60 overflow-y-auto p-1 custom-scrollbar">
-                <button type="button" *ngFor="let icon of filteredIcons" (click)="selectIcon(icon)"
-                  class="p-4 rounded-2xl hover:bg-slate-100 flex items-center justify-center transition-all hover:scale-110 active:scale-95 group"
-                  [class.bg-blue-50]="categoryForm.icon === icon" [title]="icon">
-                  <i class="material-icons text-slate-500 group-hover:text-[#1d4b99]" style="font-size: 28px;">{{ icon
-                    }}</i>
-                </button>
-              </div>
-            </div>
-            <!-- Overlay for closing dropdown -->
-            <div *ngIf="isIconDropdownOpen" (click)="isIconDropdownOpen = false"
-              class="fixed inset-0 z-[55] bg-transparent"></div>
-          </div>
-
-          <!-- Color Picker (Matching input style) -->
-          <div class="relative shrink-0">
-            <label class="block text-sm font-semibold text-slate-700 mb-3">Couleur</label>
-            <div
-              class="relative w-[60px] h-[60px] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-slate-200 bg-slate-50/50 p-1.5"
-              [style.border-color]="categoryForm.color ? categoryForm.color + '40' : null">
-              <div class="w-full h-full rounded-xl cursor-pointer transition-colors"
-                [style.background-color]="categoryForm.color || '#e2e8f0'"></div>
-              <input type="color" [(ngModel)]="categoryForm.color" name="customColor"
-                class="absolute inset-0 w-full h-full cursor-pointer opacity-0">
+            <!-- Color Picker (Matching input style) -->
+            <div class="relative shrink-0">
+              <label class="block text-sm font-semibold text-slate-700 mb-3">Couleur</label>
               <div
-                class="absolute inset-0 pointer-events-none flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
-                <i class="material-icons text-white opacity-0 group-hover:opacity-100 drop-shadow-md"
-                  style="font-size: 20px;">colorize</i>
+                class="relative w-[60px] h-[60px] rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group border border-slate-200 bg-slate-50/50 p-1.5"
+                [style.border-color]="categoryForm.color ? categoryForm.color + '40' : null">
+                <div class="w-full h-full rounded-xl cursor-pointer transition-colors"
+                  [style.background-color]="categoryForm.color || '#e2e8f0'"></div>
+                <input type="color" [(ngModel)]="categoryForm.color" name="customColor"
+                  class="absolute inset-0 w-full h-full cursor-pointer opacity-0">
+                <div
+                  class="absolute inset-0 pointer-events-none flex items-center justify-center bg-black/0 group-hover:bg-black/5 transition-colors">
+                  <i class="material-icons text-white opacity-0 group-hover:opacity-100 drop-shadow-md"
+                    style="font-size: 20px;">colorize</i>
+                </div>
               </div>
             </div>
           </div>
         </div>
+
       </div>
 
       <!-- Footer -->
-      <div class="p-6 border-t border-slate-200 bg-slate-50 flex justify-end space-x-3">
+      <div class="px-8 py-4 bg-slate-50/50 border-t border-slate-100 flex justify-end items-center gap-3">
         <button type="button" (click)="closeModal()"
-          class="px-4 py-2 border border-slate-300 rounded-lg text-sm font-bold text-slate-600 hover:bg-white transition-colors">
+          class="px-8 py-3 bg-white border border-slate-200 text-slate-600 rounded-xl text-sm font-semibold hover:bg-slate-50 transition-all duration-200">
           Annuler
         </button>
         <button type="submit"
-          class="px-4 py-2 bg-[#1d4b99] text-white rounded-lg text-sm font-bold hover:bg-[#153c80] shadow-sm transition-all">
-          {{ isEditing ? 'Mettre à jour' : 'Enregistrer' }}
+          class="px-8 py-3 bg-[#478af5] text-white rounded-xl text-sm font-semibold hover:bg-[#3b74cf] transition-all duration-200 shadow-lg shadow-blue-500/20 active:scale-95">
+          {{ isEditing ? 'Enregistrer' : 'Créer' }}
         </button>
       </div>
     </form>

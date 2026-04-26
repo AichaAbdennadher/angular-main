@@ -44,7 +44,8 @@ import { ModerateurLayoutComponent } from './pages/moderateur-layout/moderateur-
 import { SuppComponent } from './pages/supp/supp.component';
 import { SuppCommentaireComponent } from './supp-commentaire/supp-commentaire.component';
 import { SuppensionComponent } from './suppension/suppension.component';
-import { ModerateurUsersComponent } from './pages/moderateur-users/moderateur-users.component';
+import { SuppCatComponent } from './supp-cat/supp-cat.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -68,7 +69,8 @@ import { ModerateurUsersComponent } from './pages/moderateur-users/moderateur-us
     SuppComponent,
     SuppCommentaireComponent,
     SuppensionComponent,
-    ModerateurUsersComponent
+    SuppCatComponent,
+
   ],
   imports: [
     BrowserModule,

@@ -31,6 +31,8 @@ interface ChartData {
 })
 export class AdminDashboardComponent implements OnInit {
   chartTab = signal<'semaine' | 'mois'>('semaine');
+  hoveredPoint = signal<{name: string, inscrits: number, x: number, y: number} | null>(null);
+  hoveredBar = signal<{name: string, posts: number, x: number, y: number} | null>(null);
 
   loading = true;
   error = false;
@@ -165,6 +167,65 @@ export class AdminDashboardComponent implements OnInit {
 
   setChartTab(tab: 'semaine' | 'mois') {
     this.chartTab.set(tab);
+    this.hoveredPoint.set(null);
+  }
+
+  onChartHover(event: MouseEvent) {
+    const svg = event.currentTarget as SVGSVGElement;
+    const rect = svg.getBoundingClientRect();
+    const x = event.clientX - rect.left;
+    
+    const data = this.activeData();
+    if (!data || data.length === 0) return;
+
+    // Calculate which index we are closest to
+    const width = 800; // viewBox width
+    const relativeX = (x / rect.width) * width;
+    const index = Math.round((relativeX / width) * (data.length - 1));
+    
+    if (index >= 0 && index < data.length) {
+      const d = data[index];
+      const max = this.chartMax();
+      const height = 250;
+      const pointX = (index / (data.length - 1)) * width;
+      const pointY = height - (d.inscrits / max) * height;
+      
+      this.hoveredPoint.set({
+        name: d.name,
+        inscrits: d.inscrits,
+        x: pointX,
+        y: pointY
+      });
+    }
+  }
+
+  onChartLeave() {
+    this.hoveredPoint.set(null);
+  }
+
+  onBarHover(event: MouseEvent, index: number) {
+    const data = this.activityData[index];
+    if (!data) return;
+
+    const max = this.barChartMax();
+    const height = 250;
+    const width = 800;
+    const barWidth = 24;
+    
+    const x = (index / (this.activityData.length - 1)) * width;
+    const barHeight = (data.posts / max) * height;
+    const y = height - barHeight;
+
+    this.hoveredBar.set({
+      name: data.name,
+      posts: data.posts,
+      x: x,
+      y: y
+    });
+  }
+
+  onBarLeave() {
+    this.hoveredBar.set(null);
   }
 
   getBarHeight(posts: number): number {

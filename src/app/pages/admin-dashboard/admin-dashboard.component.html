@@ -1,127 +1,138 @@
-<div class="max-w-7xl mx-auto space-y-8 animate-in fade-in duration-700">
+<div class="max-w-7xl mx-auto space-y-6 pb-12 font-sans animate-in fade-in duration-700">
 
   <!-- Top Stats Row -->
-  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
     <div *ngFor="let stat of stats"
-      class="bg-white border border-slate-100 shadow-sm rounded-2xl p-5 transition-all hover:shadow-md group">
-      <div class="flex items-center gap-4">
-        <div
-          [className]="'w-12 h-12 rounded-2xl flex flex-shrink-0 items-center justify-center transition-all group-hover:scale-110 ' + stat.bg + ' ' + stat.color">
-          <lucide-icon [name]="stat.icon" [size]="24" [strokeWidth]="2.5"></lucide-icon>
-        </div>
-        <div class="flex flex-col justify-center">
-          <p class="text-slate-400 text-[11px] !font-bold uppercase tracking-widest mb-1">{{ stat.label }}</p>
-          <h3 class="text-2xl !font-black text-[#0f172a] leading-none">{{ stat.value }}</h3>
-        </div>
+      class="bg-white border border-gray-100 shadow-sm rounded-2xl p-5 flex items-center gap-4 transition-all hover:shadow-md group">
+      <div
+        [className]="'w-14 h-14 rounded-2xl flex items-center justify-center transition-all group-hover:scale-110 ' + stat.bg + ' ' + stat.color">
+        <lucide-icon [name]="stat.icon" [size]="26" [strokeWidth]="2"></lucide-icon>
+      </div>
+      <div>
+        <p class="text-gray-400 text-xs font-bold tracking-wider mb-1 uppercase">{{ stat.label }}</p>
+        <h3 class="text-3xl font-bold text-gray-900 leading-none">{{ stat.value }}</h3>
       </div>
     </div>
   </div>
 
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Chart Section -->
-    <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col min-h-[400px]">
-      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4">
+  <!-- First Row: Users Chart & Moderators List -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Users Chart -->
+    <div class="lg:col-span-2 bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
+      <div class="flex items-start justify-between mb-8">
         <div>
-          <h2 class="text-lg font-bold text-slate-900">Nombre d'utilisateurs</h2>
-          <p class="text-sm text-slate-500">Évolution du nombre d'utilisateurs</p>
+          <h3 class="text-lg font-bold text-gray-900">Nombre d'utilisateurs</h3>
+          <p class="text-sm text-gray-500 mt-1">Évolution du nombre d'utilisateurs</p>
         </div>
-        <div class="flex bg-slate-100 p-1.5 rounded-xl">
+        <div class="flex bg-gray-100 p-1 rounded-lg">
           <button (click)="setChartTab('semaine')"
-            class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200"
-            [class.text-white]="chartTab() === 'semaine'" [class.shadow-sm]="chartTab() === 'semaine'"
-            [class.text-slate-500]="chartTab() !== 'semaine'"
-            [style.backgroundColor]="chartTab() === 'semaine' ? '#1d4b99' : 'transparent'">
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200"
+            [class]="chartTab() === 'semaine' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'">
             Cette semaine
           </button>
           <button (click)="setChartTab('mois')"
-            class="px-4 py-1.5 text-sm font-medium rounded-lg transition-all duration-200"
-            [class.text-white]="chartTab() === 'mois'" [class.shadow-sm]="chartTab() === 'mois'"
-            [class.text-slate-500]="chartTab() !== 'mois'"
-            [style.backgroundColor]="chartTab() === 'mois' ? '#1d4b99' : 'transparent'">
+            class="px-4 py-1.5 text-sm font-medium rounded-md transition-all duration-200"
+            [class]="chartTab() === 'mois' ? 'bg-blue-600 text-white shadow-sm' : 'text-gray-600 hover:text-gray-900'">
             Ce mois
           </button>
         </div>
       </div>
 
       <!-- SVG Chart -->
-      <div class="flex-1 w-full relative mt-8 flex">
+      <div class="h-72 w-full relative flex">
         <!-- Y-Axis Labels -->
-        <div class="flex flex-col justify-between text-[11px] font-medium text-slate-400 pb-8 pr-4"
-          style="height: 250px;">
+        <div class="flex flex-col justify-between text-[11px] font-medium text-gray-400 pb-8 pr-4 h-[250px]">
           <span *ngFor="let label of yAxisLabels()">{{ label }}</span>
         </div>
 
-        <div class="flex-1 relative">
-          <svg class="w-full h-[250px] overflow-visible" viewBox="0 0 800 250" preserveAspectRatio="none">
+        <div class="flex-1 relative h-[250px]">
+          <svg class="w-full h-full overflow-visible cursor-crosshair" viewBox="0 0 800 250" preserveAspectRatio="none"
+            (mousemove)="onChartHover($event)" (mouseleave)="onChartLeave()">
             <!-- Grid Lines -->
-            <line x1="0" y1="0" x2="800" y2="0" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="6,6" />
-            <line x1="0" y1="62.5" x2="800" y2="62.5" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="6,6" />
-            <line x1="0" y1="125" x2="800" y2="125" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="6,6" />
-            <line x1="0" y1="187.5" x2="800" y2="187.5" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="6,6" />
-            <line x1="0" y1="250" x2="800" y2="250" stroke="#f1f5f9" stroke-width="1.5" stroke-dasharray="6,6" />
+            <line x1="0" y1="0" x2="800" y2="0" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="62.5" x2="800" y2="62.5" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="125" x2="800" y2="125" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="187.5" x2="800" y2="187.5" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="250" x2="800" y2="250" stroke="#f3f4f6" stroke-width="1" />
 
             <!-- Area -->
-            <path [attr.d]="chartAreaPath()" fill="url(#chartGradient)"
-              class="transition-all duration-700 ease-in-out" />
+            <path [attr.d]="chartAreaPath()" fill="url(#colorUsers)" class="transition-all duration-700 ease-in-out" />
 
             <!-- Stroke Line -->
-            <path [attr.d]="chartPath()" fill="none" stroke="#3b82f6" stroke-width="3" stroke-linecap="round"
+            <path [attr.d]="chartPath()" fill="none" stroke="#2563eb" stroke-width="3" stroke-linecap="round"
               stroke-linejoin="round" class="transition-all duration-700 ease-in-out" />
+
+            <!-- Tooltip Elements -->
+            <ng-container *ngIf="hoveredPoint() as point">
+              <!-- Vertical Line -->
+              <line [attr.x1]="point.x" y1="0" [attr.x2]="point.x" y2="250" stroke="#cbd5e1" stroke-width="1"
+                stroke-dasharray="4" />
+
+              <!-- Circle on Curve -->
+              <circle [attr.cx]="point.x" [attr.cy]="point.y" r="6" fill="#2563eb" stroke="white" stroke-width="2" />
+
+              <!-- Tooltip Box (Foreign Object for HTML content) -->
+              <foreignObject [attr.x]="point.x + (point.x > 700 ? -110 : 10)" [attr.y]="point.y - 60" width="100"
+                height="50">
+                <div class="bg-white border border-gray-100 shadow-lg rounded-lg p-2 text-center">
+                  <p class="text-[10px] font-bold text-gray-400 uppercase">{{ point.name }}</p>
+                  <p class="text-sm font-black text-blue-600">utilisateurs : {{ point.inscrits }}</p>
+                </div>
+              </foreignObject>
+            </ng-container>
 
             <!-- Gradient Def -->
             <defs>
-              <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.3" />
-                <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.0" />
+              <linearGradient id="colorUsers" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stop-color="#2563eb" stop-opacity="0.1" />
+                <stop offset="95%" stop-color="#2563eb" stop-opacity="0" />
               </linearGradient>
             </defs>
           </svg>
 
           <!-- X-Axis Labels -->
-          <div class="flex justify-between mt-4 text-[11px] font-medium text-slate-400">
-            <span *ngFor="let data of activeData()">{{ data.name }}</span>
+          <div class="flex justify-between mt-4">
+            <span *ngFor="let data of activeData()" class="text-[11px] font-medium text-gray-400">{{ data.name }}</span>
           </div>
         </div>
       </div>
     </div>
-
-    <!-- Recent Students Table -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-      <div class="p-6 border-b border-slate-100 flex justify-between items-center">
-        <h2 class="text-lg font-bold text-slate-900">Les modérateurs</h2>
-        <button routerLink="/admin/users" class="text-sm text-[#1d4b99] font-medium hover:underline">Voir tout</button>
+    <!-- Moderators List -->
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6 flex flex-col h-full">
+      <div class="flex items-center justify-between mb-6">
+        <h3 class="text-lg font-bold text-gray-900">Les modérateurs</h3>
+        <a routerLink="/admin/users" class="text-sm font-medium text-blue-600 hover:text-blue-800">Voir tout</a>
       </div>
-      <div class="flex-1 overflow-y-auto overflow-x-hidden">
-        <table class="w-full text-sm text-left">
-          <thead class="text-xs text-slate-500 uppercase bg-slate-50">
+
+      <div class="flex-1 overflow-hidden">
+        <table class="w-full text-left text-sm">
+          <thead class="text-xs font-bold text-gray-400 uppercase border-b border-gray-100">
             <tr>
-              <th class="px-6 py-3 font-bold">Modérateur</th>
-              <th class="px-6 py-3 font-bold">Statut</th>
+              <th class="pb-3 font-medium">MODÉRATEUR</th>
+              <th class="pb-3 font-medium text-right">STATUT</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-slate-100">
-            <tr *ngFor="let mod of moderateurs" class="hover:bg-slate-50 transition-colors">
-              <td class="px-6 py-4">
+          <tbody class="divide-y divide-gray-50">
+            <tr *ngFor="let mod of moderateurs.slice(0, 4)" class="group hover:bg-gray-50/50 transition-colors">
+              <td class="py-4">
                 <div class="flex items-center gap-3">
                   <div
-                    class="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs">
+                    class="w-8 h-8 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-xs border border-amber-100">
                     {{ (mod.name || mod.pseudo)?.charAt(0) | uppercase }}
                   </div>
                   <div class="min-w-0">
-                    <div class="font-bold text-slate-900 truncate">{{ mod.name || mod.pseudo }}</div>
-                    <div class="text-slate-500 text-xs truncate">{{ mod.email }}</div>
+                    <p class="font-bold text-gray-900 text-sm leading-tight truncate">{{ mod.name || mod.pseudo }}</p>
+                    <p class="text-xs text-gray-500 mt-0.5 truncate max-w-[120px]">{{ mod.email }}</p>
                   </div>
                 </div>
               </td>
-              <td class="px-6 py-4">
-                <span
-                  class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider"
-                  [ngClass]="{
-                    'bg-emerald-100 text-emerald-700': mod.status === 'actif' || !mod.status,
-                    'bg-amber-100 text-amber-700': mod.status === 'en attente',
-                    'bg-slate-100 text-slate-700': mod.status === 'suspendu'
+              <td class="py-4 text-right">
+                <span class="inline-flex px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider" [ngClass]="{
+                    'bg-green-50 text-green-600': mod.status === 'actif' || !mod.status,
+                    'bg-red-50 text-red-600': mod.status === 'suspendu',
+                    'bg-gray-100 text-gray-600': mod.status === 'en attente'
                   }">
-                  {{ mod.status || 'Actif' }}
+                  {{ mod.status || 'actif' }}
                 </span>
               </td>
             </tr>
@@ -131,63 +142,78 @@
     </div>
   </div>
 
-  <!-- Bottom Row -->
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Bar Chart -->
-    <div class="lg:col-span-2 bg-white border border-slate-200 shadow-sm rounded-3xl p-8">
-      <div class="flex justify-between items-center mb-10">
-        <h3 class="text-slate-900 font-bold text-lg">Publications par Jour</h3>
-        <span class="px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-xs font-bold">Contenu</span>
+  <!-- Second Row: Posts Chart & Category Distribution -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+    <!-- Posts Chart -->
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
+      <div class="flex items-center justify-between mb-8">
+        <h3 class="text-lg font-bold text-gray-900">Postes par Jour</h3>
       </div>
 
       <div class="flex w-full mt-4">
         <!-- Y-Axis Labels -->
-        <div class="flex flex-col justify-between text-[11px] font-medium text-slate-400 pb-8 pr-4"
-          style="height: 250px;">
+        <div class="flex flex-col justify-between text-[11px] font-medium text-gray-400 pb-8 pr-4 h-64">
           <span *ngFor="let label of barYAxisLabels()">{{ label }}</span>
         </div>
 
-        <div class="flex-1 relative h-[250px]">
-          <!-- Grid Lines (Absolute) -->
-          <div class="absolute inset-0 flex flex-col justify-between pb-8 pt-2 pointer-events-none">
-            <div class="w-full border-b border-dashed border-slate-200" style="height: 1px;"></div>
-            <div class="w-full border-b border-dashed border-slate-200" style="height: 1px;"></div>
-            <div class="w-full border-b border-dashed border-slate-200" style="height: 1px;"></div>
-            <div class="w-full border-b border-dashed border-slate-200" style="height: 1px;"></div>
-            <div class="w-full border-b border-dashed border-slate-200" style="height: 1px;"></div>
-          </div>
+        <div class="flex-1 relative h-64">
+          <svg class="w-full h-full overflow-visible" viewBox="0 0 800 250" preserveAspectRatio="none"
+            (mouseleave)="onBarLeave()">
+            <!-- Grid Lines -->
+            <line x1="0" y1="0" x2="800" y2="0" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="62.5" x2="800" y2="62.5" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="125" x2="800" y2="125" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="187.5" x2="800" y2="187.5" stroke="#f3f4f6" stroke-width="1" />
+            <line x1="0" y1="250" x2="800" y2="250" stroke="#f3f4f6" stroke-width="1" />
 
-          <!-- Bars Container -->
-          <div class="absolute inset-0 flex items-end justify-between px-2 pb-8 pt-2">
-            <div *ngFor="let d of activityData" class="flex-1 flex justify-center h-full items-end group px-2">
-              <div [style.height.%]="getBarHeight(d.posts)"
-                class="w-full max-w-[40px] bg-[#8b5cf6] rounded-t-md transition-all duration-1000 hover:bg-[#7c3aed]">
-              </div>
-            </div>
-          </div>
+            <!-- Bars -->
+            <g *ngFor="let d of activityData; let i = index">
+              <!-- Hover Background (Cursor) -->
+              <rect [attr.x]="(i / (activityData.length - 1)) * 800 - 20" y="0" width="40" height="250" fill="#f9fafb"
+                class="opacity-0 hover:opacity-100 transition-opacity cursor-pointer"
+                (mouseenter)="onBarHover($event, i)" />
+
+              <!-- The Bar -->
+              <rect [attr.x]="(i / (activityData.length - 1)) * 800 - 12"
+                [attr.y]="250 - (d.posts / barChartMax()) * 250" width="24"
+                [attr.height]="(d.posts / barChartMax()) * 250" fill="#8b5cf6" rx="4" ry="4"
+                class="transition-all duration-700 pointer-events-none" />
+            </g>
+
+            <!-- Tooltip -->
+            <ng-container *ngIf="hoveredBar() as bar">
+              <foreignObject [attr.x]="bar.x - 50" [attr.y]="bar.y - 60" width="100" height="50">
+                <div class="bg-white border border-gray-100 shadow-lg rounded-lg p-2 text-center">
+                  <p class="text-[10px] font-bold text-gray-400 uppercase">{{ bar.name }}</p>
+                  <p class="text-sm font-black text-[#8b5cf6]/80">posts : {{ bar.posts }}</p>
+                </div>
+              </foreignObject>
+            </ng-container>
+          </svg>
 
           <!-- X-Axis Labels -->
-          <div class="absolute bottom-0 w-full flex justify-between px-2">
+          <div class="flex justify-between mt-4">
             <div *ngFor="let d of activityData" class="flex-1 flex justify-center">
-              <span class="text-[11px] font-medium text-slate-400">{{ d.name }}</span>
+              <span class="text-[11px] font-medium text-gray-400">{{ d.name }}</span>
             </div>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Categories Allocation -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col">
-      <h2 class="text-lg font-bold text-slate-900 mb-8">Répartition des postes par catégorie</h2>
-      <div class="space-y-7 flex-1">
+    <!-- Category Distribution -->
+    <div class="bg-white border border-gray-100 shadow-sm rounded-2xl p-6">
+      <h3 class="text-lg font-bold text-gray-900 mb-8">Répartition des postes par catégorie</h3>
+      <div class="space-y-6">
         <div *ngFor="let cat of categories">
-          <div class="flex justify-between items-end mb-2.5">
-            <span class="text-sm font-bold text-slate-600">{{ cat.name }}</span>
-            <span class="text-sm font-bold text-slate-400">{{ cat.percent }}%</span>
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-sm font-bold text-gray-700">{{ cat.name }}</span>
+            <span class="text-sm font-bold text-gray-500">{{ cat.percent }}%</span>
           </div>
-          <div class="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden">
-            <div class="h-full rounded-full transition-all duration-1000 ease-out" [class]="cat.color"
-              [style.width.%]="cat.percent"></div>
+          <div class="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
+            <div class="h-2.5 rounded-full transition-all duration-1000 ease-out" [style.width.%]="cat.percent"
+              [style.background-color]="cat.percent > 50 ? '#1e293b' : '#3b82f6'">
+            </div>
           </div>
         </div>
       </div>
