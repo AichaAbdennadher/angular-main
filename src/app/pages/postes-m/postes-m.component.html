@@ -1,21 +1,21 @@
-<div class="space-y-6 font-sans relative">
-  <!-- Notifications Banner -->
-  <div *ngIf="notification()" class="fixed top-20 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
-    <div [ngClass]="{
-        'bg-emerald-50 border-emerald-200 text-emerald-800': notification()?.type === 'success',
-        'bg-red-50 border-red-200 text-red-800': notification()?.type === 'error',
-        'bg-blue-50 border-blue-200 text-blue-800': notification()?.type === 'info'
-      }" class="flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl border backdrop-blur-sm">
-      <lucide-icon
-        [name]="notification()?.type === 'success' ? 'check-circle' : (notification()?.type === 'error' ? 'x-circle' : 'info')"
-        class="w-5 h-5"></lucide-icon>
-      <span class="text-sm font-bold">{{ notification()?.message }}</span>
-      <button (click)="notification.set(null)" class="ml-2 hover:opacity-70 transition-opacity">
-        <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
-      </button>
-    </div>
+<!-- Notifications Banner -->
+<div *ngIf="notification()" class="fixed top-24 right-6 z-[100] animate-in slide-in-from-right-8 duration-300">
+  <div [ngClass]="{
+      'bg-emerald-50 border-emerald-200 text-emerald-800': notification()?.type === 'success',
+      'bg-red-50 border-red-200 text-red-800': notification()?.type === 'error',
+      'bg-blue-50 border-blue-200 text-blue-800': notification()?.type === 'info'
+    }" class="flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl border backdrop-blur-sm">
+    <lucide-icon
+      [name]="notification()?.type === 'success' ? 'check-circle' : (notification()?.type === 'error' ? 'x-circle' : 'info')"
+      class="w-5 h-5"></lucide-icon>
+    <span class="text-sm font-bold">{{ notification()?.message }}</span>
+    <button (click)="notification.set(null)" class="ml-2 hover:opacity-70 transition-opacity">
+      <lucide-icon name="x" class="w-4 h-4"></lucide-icon>
+    </button>
   </div>
+</div>
 
+<div class="space-y-6 font-sans relative">
   <!-- Header -->
   <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
@@ -27,9 +27,11 @@
     </div>
   </div>
 
-  <!-- Filters & Search -->
-  <div class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
-    <div class="relative flex-1">
+  <!-- Combined Table and Filters Block -->
+  <div class="bg-white rounded-[32px] shadow-sm border border-slate-100">
+    <!-- Filters & Search -->
+    <div class="p-4 sm:p-6 border-b border-slate-100 flex flex-col sm:flex-row items-center gap-4 relative z-20">
+      <div class="relative w-full sm:flex-1">
       <lucide-icon name="search"
         class="w-5 h-5 absolute left-2 top-1/2 transform -translate-y-1/2 text-slate-400"></lucide-icon>
       <input type="text" placeholder="Rechercher" [ngModel]="searchQuery()"
@@ -46,7 +48,7 @@
       </button>
 
       <!-- Reset Button Icon -->
-      <button *ngIf="statusFilter() !== 'all' || lockFilter() !== 'all' || specificDateFilter() || searchQuery()" 
+      <button *ngIf="statusFilter() !== 'all' || lockFilter() !== 'all' || specificDateFilter() || searchQuery()"
         (click)="clearFilters()"
         class="p-2 text-slate-400 hover:text-[#478af5] hover:bg-blue-50 rounded-lg transition-all"
         title="Réinitialiser les filtres">
@@ -57,7 +59,8 @@
       <div *ngIf="isFilterOpen()"
         class="absolute right-0 top-full mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-4 z-50 space-y-4">
         <div>
-          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Statut du post</label>
+          <label class="block text-[10px] font-bold text-slate-400 mb-1.5 uppercase tracking-wider">Statut du
+            post</label>
           <select [ngModel]="statusFilter()" (ngModelChange)="onStatusFilterChange($any($event))"
             class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-slate-50 focus:ring-2 focus:ring-[#478af5] outline-none">
             <option value="all">Tous les posts</option>
@@ -98,39 +101,38 @@
 
   </div>
 
-  <!-- Posts Table -->
-  <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+    <!-- Posts Table -->
     <div class="overflow-x-auto">
       <table class="w-full text-sm text-left">
-        <thead class="text-xs text-slate-500 uppercase bg-slate-50/80 border-b border-slate-200">
+        <thead class="text-[11px] text-slate-400 uppercase tracking-widest bg-slate-50/50 border-b border-slate-100">
           <tr>
-            <th class="px-6 py-4 font-bold">Numéro</th>
-            <th class="px-6 py-4 font-bold">Titre</th>
-            <th class="px-6 py-4 font-bold">categorie</th>
-            <th class="px-6 py-4 font-bold">Auteur</th>
-            <th class="px-6 py-4 font-bold">Date</th>
-            <th class="px-6 py-4 font-bold text-right">Actions</th>
+            <th class="px-6 py-5 font-bold">ID</th>
+            <th class="px-6 py-5 font-bold">Titre</th>
+            <th class="px-6 py-5 font-bold">Catégorie</th>
+            <th class="px-6 py-5 font-bold">Auteur</th>
+            <th class="px-6 py-5 font-bold">Date</th>
+            <th class="px-6 py-5 font-bold text-center">Actions</th>
           </tr>
         </thead>
-        <tbody class="divide-y divide-slate-100">
+        <tbody class="divide-y divide-slate-50">
           <tr *ngFor="let post of filteredPosts()" class="hover:bg-slate-50/50 transition-colors group">
-            <td class="px-6 py-4 font-mono text-slate-400">{{ post.id }}</td>
+            <td class="px-6 py-4 font-mono text-slate-400 text-xs">{{ post.id }}</td>
             <td class="px-6 py-4 max-w-md">
               <div class="space-y-1">
                 <div class="flex items-center gap-2">
-                  <div *ngIf="post.titre" class="font-bold text-slate-800 line-clamp-1">{{ post.titre }}</div>
-                  <lucide-icon *ngIf="post.is_locked" name="message-square-lock" class="w-3.5 h-3.5 text-blue-400"
+                  <div *ngIf="post.titre" class="font-bold text-slate-800 line-clamp-1 group-hover:text-[#478af5] transition-colors">{{ post.titre }}</div>
+                  <lucide-icon *ngIf="post.is_locked" name="message-square-lock" class="w-4 h-4 text-slate-400"
                     title="Sujet fermé"></lucide-icon>
-                  <lucide-icon *ngIf="post.is_hidden" name="eye-off" class="w-3.5 h-3.5 text-amber-400"
+                  <lucide-icon *ngIf="post.is_hidden" name="eye-off" class="w-4 h-4 text-slate-400"
                     title="Masqué"></lucide-icon>
                 </div>
               </div>
             </td>
             <td class="px-6 py-4">
               <div *ngIf="post.categorie"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
+                class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[12px] font-bold border transition-all shadow-sm"
                 [ngStyle]="getCategoryStyles(post.categorie)">
-                <i class="material-icons" style="font-size: 16px;">{{ post.categorie.icon || 'label' }}</i>
+                <i class="material-icons" style="font-size: 14px;">{{ post.categorie.icon || 'label' }}</i>
                 {{ post.categorie.titre }}
               </div>
             </td>
@@ -138,32 +140,28 @@
             <!-- Auteur -->
             <td class="px-6 py-4">
               <div class="flex items-center gap-3">
-                <div [ngStyle]="getCategoryStyles(post.categorie)"
-                  class="w-9 h-9 rounded-full flex items-center justify-center  font-bold text-xs border ">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-bold text-xs bg-blue-50 text-[#478af5] border border-blue-100">
                   {{ post.user?.pseudo?.substring(0, 2).toUpperCase() || 'U' }}
                 </div>
                 <div class="flex flex-col">
                   <span class="text-sm font-bold text-slate-700">{{ post.user?.pseudo }}</span>
-
+                  <span class="text-[10px] text-slate-400 font-medium uppercase tracking-wider" *ngIf="post.user?.status === 'suspendu'">Suspendu</span>
                 </div>
               </div>
             </td>
 
-
             <!-- Date -->
             <td class="px-6 py-4 whitespace-nowrap">
-              <div class="text-slate-600 text-xs">{{ formatDate(post.created_at) }}</div>
+              <div class="text-slate-500 text-sm font-medium">{{ formatDate(post.created_at) }}</div>
             </td>
-
-
 
             <!-- Actions -->
             <td class="px-6 py-4">
-              <div class="flex items-center justify-end gap-2">
+              <div class="flex items-center justify-center gap-1">
                 <!-- Masquer/Afficher -->
                 <button (click)="toggleHide(post.id)" class="p-2 rounded-lg transition-colors"
                   [ngClass]="post.is_hidden ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'"
-                  [title]="post.is_hidden ? 'Afficher le contenu' : 'Masquer le contenu'">
+                  [title]="post.is_hidden ? 'Afficher la poste' : 'Masquer la poste'">
                   <lucide-icon [name]="post.is_hidden ? 'eye' : 'eye-off'" class="w-5 h-5"></lucide-icon>
                 </button>
 
@@ -175,19 +173,19 @@
                     class="w-5 h-5"></lucide-icon>
                 </button>
 
-                <button (click)="deletePost(post.id)"
+                <button (click)="openDeleteModal(post.id)"
                   class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-xl transition-all"
                   title="Supprimer le post">
                   <lucide-icon name="trash2" class="w-5 h-5"></lucide-icon>
                 </button>
-                <button (click)="toggleStatus(post)" class="p-2 transition-colors rounded-lg"
+                <button (click)="toggleUserStatus(post.user)" class="p-2 transition-colors rounded-lg"
                   [ngClass]="post.user?.status === 'suspendu' ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' : 'text-slate-400 hover:text-orange-600 hover:bg-orange-50'"
                   [title]="post.user?.status === 'suspendu' ? 'Réactiver l\'utilisateur' : 'Suspendre l\'utilisateur'">
                   <lucide-icon [name]="post.user?.status === 'suspendu' ? 'check-circle' : 'user-minus'"
                     class="w-5 h-5"></lucide-icon>
                 </button>
                 <button (click)="viewPost(post.id)"
-                  class="p-2 text-slate-400 hover:text-[#478af5] hover:bg-blue-50 rounded-lg transition-colors"
+                  class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
                   title="Voir le post">
                   <lucide-icon name="eye" class="w-5 h-5"></lucide-icon>
                 </button>
@@ -200,7 +198,7 @@
             <td colspan="5" class="px-6 py-20 text-center">
               <div class="flex flex-col items-center gap-3">
                 <div class="w-10 h-10 border-4 border-[#478af5] border-t-transparent rounded-full animate-spin"></div>
-                <p class="text-slate-500 font-medium">Chargement des publications...</p>
+                <p class="text-slate-500 font-medium">Chargement des postes</p>
               </div>
             </td>
           </tr>
@@ -218,137 +216,225 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Pagination moved inside the rounded container -->
+    <app-pagination *ngIf="totalPages() > 1" [currentPage]="currentPage()" [totalPages]="totalPages()"
+      (pageChanged)="onPageChanged($any($event))"></app-pagination>
   </div>
-  <app-pagination [currentPage]="currentPage()" [totalPages]="totalPages()"
-    (pageChanged)="onPageChanged($any($event))"></app-pagination>
-</div>
-<!-- Modal Voir Post -->
-<div *ngIf="isViewModalOpen()"
-  class="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md" @fadeIn>
-  <div class="bg-white rounded-[32px] shadow-2xl w-full max-w-3xl overflow-hidden border border-slate-100" @modalSlide>
+  <!-- Modal Voir Post -->
+  <div *ngIf="isViewModalOpen()">
+    <!-- Backdrop -->
+    <div (click)="closeViewModal()" class="fixed inset-0 z-[60] bg-slate-900/60 backdrop-blur-md" @fadeIn></div>
 
-    <!-- Modal Close Button (Floating) -->
-    <button (click)="closeViewModal()"
-      class="absolute top-6 right-6 z-[70] p-2 bg-white/80 hover:bg-white rounded-full shadow-lg border border-slate-100 transition-all hover:scale-110 active:scale-95 group">
-      <lucide-icon name="x" class="w-5 h-5 text-slate-400 group-hover:text-slate-600"></lucide-icon>
-    </button>
+    <!-- Content Wrapper -->
+    <div class="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 pointer-events-none">
+      <div
+        class="bg-white rounded-[32px] shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden border border-slate-100 pointer-events-auto relative flex flex-col"
+        @modalSlide>
 
-    <div class="max-h-[85vh] overflow-y-auto custom-scrollbar">
-      <div *ngIf="selectedPost()" class="p-8 space-y-6">
+        <!-- Modal Header -->
+        <div class="px-6 py-4 border-b border-slate-50 flex justify-between items-center bg-white shrink-0 z-10">
+          <h2 class="text-lg font-bold text-slate-800">Détails de la publication</h2>
+          <button (click)="closeViewModal()" class="p-2 hover:bg-slate-50 rounded-full transition-colors group">
+            <lucide-icon name="x" class="w-5 h-5 text-slate-400 group-hover:text-slate-600"></lucide-icon>
+          </button>
+        </div>
 
-        <!-- Post Card Style Header -->
-        <div class="flex justify-between items-start">
-          <div class="space-y-3">
-            <div class="flex items-center gap-3">
-              <div *ngIf="selectedPost()?.categorie"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
-                [ngStyle]="getCategoryStyles(selectedPost().categorie)">
-                <i class="material-icons" style="font-size: 16px;">{{ selectedPost().categorie.icon || 'label' }}</i>
-                {{ selectedPost().categorie.titre }}
+        <div class="overflow-y-auto custom-scrollbar flex-1">
+          <div *ngIf="selectedPost()" class="p-5 space-y-3">
+
+            <!-- Post Card Style Header -->
+            <div class="flex justify-between items-center mb-2">
+              <div class="flex items-center gap-3">
+                <div *ngIf="selectedPost()?.categorie"
+                  class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all"
+                  [ngStyle]="getCategoryStyles(selectedPost().categorie)">
+                  <i class="material-icons" style="font-size: 16px;">{{ selectedPost().categorie.icon || 'label' }}</i>
+                  {{ selectedPost().categorie.titre }}
+                </div>
+                <span class="text-slate-500 text-sm flex items-center gap-1">
+                  par <span class="text-[#478af5] font-bold">{{ selectedPost()?.user?.pseudo || 'Anonyme' }}</span>
+                </span>
+                <span class="text-slate-400 text-xs font-medium">• {{ formatDate(selectedPost().created_at) }}</span>
               </div>
-              <span class="text-slate-500 text-sm flex items-center gap-1">
-                par <span class="text-[#00b1ba] font-bold">{{ selectedPost().user?.pseudo || 'Anonyme' }}</span>
-              </span>
-              <span class="text-slate-400 text-xs font-medium">• {{ formatDate(selectedPost().created_at) }}</span>
-            </div>
-            <h2 class="text-2xl font-black text-slate-900 leading-tight">{{ selectedPost().titre }}</h2>
-          </div>
 
-          <div class="flex gap-2">
-            <!-- Bloquer/Débloquer (Masquer) -->
-            <button (click)="toggleHide(selectedPost().id)" class="p-2 rounded-lg transition-colors"
-              [ngClass]="selectedPost().is_hidden ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'"
-              [title]="selectedPost().is_hidden ? 'Afficher le contenu' : 'Masquer le contenu'">
-              <lucide-icon [name]="selectedPost().is_hidden ? 'eye' : 'eye-off'" [size]="20"></lucide-icon>
-            </button>
+              <div class="flex gap-1">
+                <!-- Bloquer/Débloquer (Masquer) -->
+                <button (click)="toggleHide(selectedPost().id)" class="p-1.5 rounded-lg transition-colors"
+                  [ngClass]="selectedPost().is_hidden ? 'text-amber-600 bg-amber-50 hover:bg-amber-100' : 'text-slate-400 hover:text-amber-600 hover:bg-amber-50'"
+                  [title]="selectedPost().is_hidden ? 'Afficher le contenu' : 'Masquer le contenu'">
+                  <lucide-icon [name]="selectedPost().is_hidden ? 'eye' : 'eye-off'" [size]="18"></lucide-icon>
+                </button>
 
-            <!-- Fermer/Ouvrir sujet (Commentaires) -->
-            <button (click)="toggleLock(selectedPost().id)" class="p-2 transition-all rounded-xl"
-              [ngClass]="selectedPost().is_locked ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-slate-400 hover:bg-slate-50'"
-              [title]="selectedPost().is_locked ? 'Ouvrir le sujet' : 'Fermer le sujet'">
-              <lucide-icon [name]="selectedPost().is_locked ? 'message-square' : 'message-square-lock'"
-                [size]="20"></lucide-icon>
-            </button>
+                <!-- Fermer/Ouvrir sujet (Commentaires) -->
+                <button (click)="toggleLock(selectedPost().id)" class="p-1.5 transition-all rounded-lg"
+                  [ngClass]="selectedPost().is_locked ? 'text-blue-600 bg-blue-50 hover:bg-blue-100' : 'text-slate-400 hover:bg-slate-50'"
+                  [title]="selectedPost().is_locked ? 'Ouvrir le sujet' : 'Fermer le sujet'">
+                  <lucide-icon [name]="selectedPost().is_locked ? 'message-square' : 'message-square-lock'"
+                    [size]="18"></lucide-icon>
+                </button>
 
-          </div>
-        </div>
-
-        <!-- Post Content -->
-        <div class="space-y-6">
-          <p class="text-slate-600 leading-relaxed text-base">{{ selectedPost().contenu }}</p>
-
-          <div *ngIf="selectedPost().image"
-            class="rounded-3xl overflow-hidden border border-slate-100 shadow-sm bg-slate-50">
-            <img [src]="getImageUrl(selectedPost().image)" class="w-full h-auto object-cover"
-              [alt]="selectedPost().titre" />
-          </div>
-        </div>
-
-        <!-- Stats Bar -->
-        <div class="pt-6 border-t border-slate-100 flex items-center gap-6">
-          <div class="flex items-center gap-2 text-slate-500 group cursor-default">
-            <lucide-icon name="thumbs-up" class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
-            <span class="text-sm font-bold">{{ countLikes(selectedPost()) }}</span>
-          </div>
-          <div class="flex items-center gap-2 text-slate-500 group cursor-default">
-            <lucide-icon name="thumbs-down" class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
-            <span class="text-sm font-bold">{{ countDislikes(selectedPost()) }}</span>
-          </div>
-          <div class="flex items-center gap-2 text-[#00b1ba] font-bold">
-            <lucide-icon name="message-square" class="w-5 h-5"></lucide-icon>
-            <span class="text-sm">{{ selectedPost().commentaires?.length || 0 }}</span>
-          </div>
-        </div>
-
-        <!-- Comments Section -->
-        <div class="pt-8 space-y-6">
-          <div *ngFor="let comment of selectedPost().commentaires" class="flex gap-4 group">
-            <!-- Comment Avatar -->
-            <div
-              class="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#00b1ba] font-bold text-xs shadow-sm shrink-0">
-              {{ getInitial(comment.user?.pseudo) }}
+                <!-- Suspendre Utilisateur -->
+                <button (click)="toggleUserStatus(selectedPost()?.user)" class="p-1.5 transition-all rounded-lg"
+                  [ngClass]="selectedPost()?.user?.status === 'suspendu' ? 'text-emerald-600 bg-emerald-50 hover:bg-emerald-100' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'"
+                  [title]="selectedPost()?.user?.status === 'suspendu' ? 'Activer le compte' : 'Suspendre le compte'">
+                  <lucide-icon [name]="selectedPost()?.user?.status === 'suspendu' ? 'check-circle' : 'user-minus'"
+                    [size]="18"></lucide-icon>
+                </button>
+              </div>
             </div>
 
-            <!-- Comment Box -->
-            <div
-              class="flex-1 bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm relative transition-all hover:shadow-md hover:border-slate-200">
-              <div class="flex justify-between items-center mb-2">
-                <span class="text-sm font-bold text-[#00b1ba]">{{ comment.user?.pseudo }}</span>
-                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">{{
-                  formatDate(comment.created_at) }}</span>
-              </div>
-              <p class="text-sm text-slate-600 leading-relaxed">{{ comment.contenu }}</p>
+            <!-- Main Content Block (Titre + Texte + Image) -->
+            <div class="space-y-3">
+              <h2 class="text-xl font-black text-slate-900 leading-tight">{{ selectedPost().titre }}</h2>
+              <p class="text-slate-700 leading-relaxed text-base">{{ selectedPost()?.contenu }}</p>
 
-              <!-- Moderator Action on Comment -->
-              <button (click)="deleteComment(comment.id)"
-                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 p-1.5 text-slate-300 hover:text-red-500 transition-all"
-                title="Supprimer ce commentaire">
-                <lucide-icon name="trash2" [size]="14"></lucide-icon>
+              <div *ngIf="selectedPost()?.image" class="pt-1">
+                <div class="rounded-2xl overflow-hidden border border-slate-100 shadow-md bg-slate-50 group w-full">
+                  <img [src]="getImageUrl(selectedPost()?.image)"
+                    class="max-h-[270px] w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    [alt]="selectedPost()?.titre" />
+                </div>
+              </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="flex items-center gap-6 pt-2">
+              <div class="flex items-center gap-2 text-slate-500 group cursor-default">
+                <lucide-icon name="thumbs-up" class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
+                <span class="text-sm font-bold">{{ countLikes(selectedPost()) }}</span>
+              </div>
+              <div class="flex items-center gap-2 text-slate-500 group cursor-default">
+                <lucide-icon name="thumbs-down"
+                  class="w-5 h-5 group-hover:scale-110 transition-transform"></lucide-icon>
+                <span class="text-sm font-bold">{{ countDislikes(selectedPost()) }}</span>
+              </div>
+              <button (click)="isCommentsExpanded.set(!isCommentsExpanded())"
+                [disabled]="!selectedPost()?.commentaires?.length"
+                class="flex items-center gap-2 text-[#478af5] font-bold px-4 py-2 rounded-xl transition-all group disabled:cursor-default"
+                [ngClass]="selectedPost()?.commentaires?.length ? 'hover:bg-[#00b1ba]/5' : 'opacity-70'">
+                <lucide-icon name="message-square" class="w-5 h-5 transition-transform"
+                  [ngClass]="selectedPost()?.commentaires?.length ? 'group-hover:scale-110' : ''"></lucide-icon>
+                <span class="text-sm">{{ selectedPost()?.commentaires?.length || 0 }} Commentaires</span>
+                <lucide-icon *ngIf="selectedPost()?.commentaires?.length"
+                  [name]="isCommentsExpanded() ? 'chevron-up' : 'chevron-down'"
+                  class="w-4 h-4 ml-1 opacity-50"></lucide-icon>
               </button>
             </div>
-          </div>
 
-          <div *ngIf="!selectedPost().commentaires?.length"
-            class="text-center py-12 bg-slate-50/50 rounded-[32px] border border-dashed border-slate-200">
-            <lucide-icon name="message-square" class="w-12 h-12 text-slate-200 mx-auto mb-3"></lucide-icon>
-            <p class="text-slate-400 text-sm font-medium italic">Aucun commentaire sur cette publication.</p>
+            <!-- Comments Section -->
+            <div *ngIf="isCommentsExpanded()" class=" space-y-4" @slideInOut>
+              <div *ngFor="let comment of selectedPost()?.commentaires" class="flex gap-4 group">
+                <!-- Comment Avatar -->
+                <div
+                  class="w-10 h-10 rounded-xl bg-white border border-slate-100 flex items-center justify-center text-[#478af5] font-bold text-xs shadow-sm shrink-0">
+                  {{ getInitial(comment.user?.pseudo) }}
+                </div>
+
+                <!-- Comment Box -->
+                <div
+                  class="flex-1 bg-white rounded-[24px] p-5 border border-slate-100 shadow-sm relative transition-all hover:shadow-md hover:border-slate-200">
+                  <div class="flex justify-between items-start mb-1">
+                    <span class="text-sm font-bold text-[#478af5]">{{ comment.user?.pseudo }}</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
+                        {{ formatDate(comment.created_at) }}
+                      </span>
+                      <button (click)="openDeleteCommentModal(comment.id)"
+                        class="p-1.5 text-red-500 bg-red-50 hover:bg-red-100 rounded-lg transition-all"
+                        title="Supprimer ce commentaire">
+                        <lucide-icon name="trash2" [size]="16"></lucide-icon>
+                      </button>
+                    </div>
+                  </div>
+                  <p class="text-sm text-slate-600 leading-relaxed">{{ comment.contenu }}</p>
+                </div>
+              </div>
+
+
+            </div>
           </div>
         </div>
+
+        <!-- Modal Footer -->
+        <div class="px-8 py-4 bg-slate-50/50 border-t border-slate-100 flex justify-end items-center gap-3">
+          <button (click)="closeViewModal()"
+            class="w-full sm:w-auto px-8 py-3 bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-200 rounded-xl text-sm font-semibold hover:bg-gray-50 dark:hover:bg-gray-600 transition-all duration-200">
+          Fermer
+          </button>
+
+
+          <button (click)="openDeleteModal(selectedPost()?.id)"
+            class="px-5 py-2.5 text-red-600 bg-red-50 rounded-xl text-sm font-bold transition-all">
+            Supprimer
+          </button>
+
+        </div>
+
       </div>
     </div>
+  </div>
 
-    <!-- Sticky Footer Actions -->
-    <div class="px-8 py-5 bg-slate-50/80 border-t border-slate-100 flex justify-end items-center backdrop-blur-sm">
+  <!-- Modal de Suppression Commentaire -->
+  <app-supp-commentaire *ngIf="isDeleteCommentModalOpen()" [statutId]="commentIdToDelete()"
+    (confirmDelete)="confirmDeleteComment($event)"
+    (cancel)="isDeleteCommentModalOpen.set(false)"></app-supp-commentaire>
 
-      <div class="flex gap-3">
-        <button (click)="closeViewModal()"
-          class="px-6 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-bold text-slate-600 hover:bg-slate-100 transition-all shadow-sm">
-          Fermer
+  <!-- Modal de Suppression -->
+  <app-supp *ngIf="isDeleteModalOpen()" [statutId]="postIdToDelete()" (confirmDelete)="confirmDeletePost($event)"
+    (cancel)="isDeleteModalOpen.set(false)"></app-supp>
+
+  <!-- Modal Suspension (Raison) -->
+<div *ngIf="suspendModalOpen()">
+  <div (click)="suspendModalOpen.set(false)" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50" [@fadeIn]></div>
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-white rounded-2xl shadow-xl overflow-hidden" [@modalSlide]>
+      <!-- Header -->
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-red-50">
+        <div class="flex items-center gap-3">
+          <div class="w-9 h-9 bg-red-100 rounded-full flex items-center justify-center">
+            <lucide-icon name="user-minus" class="w-5 h-5 text-red-600"></lucide-icon>
+          </div>
+          <div>
+            <h3 class="text-base font-extrabold text-slate-900">Suspendre le compte</h3>
+            <p class="text-xs text-slate-500">{{ userToSuspend()?.pseudo || userToSuspend()?.name }}</p>
+          </div>
+        </div>
+        <button (click)="suspendModalOpen.set(false)"
+          class="text-slate-400 hover:text-slate-600 p-1.5 rounded-lg hover:bg-slate-100 transition-colors">
+          <lucide-icon name="x" class="w-5 h-5"></lucide-icon>
         </button>
-        <button (click)="deletePost(selectedPost().id); closeViewModal()"
-          class="px-6 py-2.5 bg-red-500 text-white rounded-xl text-sm font-bold hover:bg-red-600 shadow-lg shadow-red-500/20 transition-all active:scale-95">
-          Supprimer définitivement
+      </div>
+
+      <!-- Body -->
+      <div class="px-6 py-6 space-y-4">
+        <!-- Notification de suspension retirée du modal admin -->
+        <div>
+          <label class="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2">Raison <span class="text-red-500">*</span></label>
+          <textarea
+            [ngModel]="suspendReason()"
+            (ngModelChange)="suspendReason.set($event)"
+            rows="3"
+            placeholder="Ex: Comportement inapproprié, spam, etc."
+            class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-red-300 focus:border-red-400 outline-none transition-all resize-none">
+          </textarea>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex justify-end gap-3">
+        <button type="button" (click)="suspendModalOpen.set(false)"
+          class="px-5 py-2 border border-slate-200 text-slate-600 rounded-lg text-xs font-bold hover:bg-slate-100 transition-all">
+          Annuler
+        </button>
+        <button type="button" (click)="confirmSuspend()"
+          [disabled]="!suspendReason().trim() || suspendLoading()"
+          class="px-5 py-2 bg-red-600 text-white rounded-lg text-xs font-bold hover:bg-red-700 transition-all shadow-md active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2">
+          <lucide-icon *ngIf="suspendLoading()" name="loader" class="w-4 h-4 animate-spin"></lucide-icon>
+          <lucide-icon *ngIf="!suspendLoading()" name="user-minus" class="w-4 h-4"></lucide-icon>
+          {{ suspendLoading() ? 'En cours...' : 'Confirmer la suspension' }}
         </button>
       </div>
     </div>
   </div>
+</div>

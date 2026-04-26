@@ -1,0 +1,105 @@
+/* Animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+@keyframes float-rotate {
+  0%, 100% { transform: translateY(0) rotate(-6deg); }
+  50% { transform: translateY(-15px) rotate(-4deg); }
+}
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+}
+
+@keyframes shimmer {
+  100% { transform: translateX(100%); }
+}
+
+@keyframes slide-in-left {
+  from { transform: translateX(-50px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-bottom {
+  from { transform: translateY(30px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+@keyframes sun-glow {
+  0% { transform: scale(0.9); opacity: 0; filter: brightness(1); }
+  50% { transform: scale(1.05); opacity: 1; filter: brightness(1.5); box-shadow: 0 0 25px rgba(239, 68, 68, 0.5); }
+  100% { transform: scale(1.1); opacity: 0; filter: brightness(1); }
+}
+
+/* Classes */
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: float 6s ease-in-out infinite;
+  animation-delay: 2s;
+}
+
+.animate-float-rotate {
+  animation: float-rotate 6s ease-in-out infinite;
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite;
+}
+
+.animate-sun-glow {
+  animation: sun-glow 4s ease-in-out infinite;
+}
+
+
+/* Entry Animations */
+.animate-in.slide-in-from-left {
+  animation: slide-in-left 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-in.slide-in-from-bottom {
+  animation: slide-in-bottom 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-in.fade-in {
+  animation: fade-in 1.5s ease-out forwards;
+}
+
+.animate-in.zoom-in {
+  animation: zoom-in 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.delay-300 { animation-delay: 300ms; }
+.delay-500 { animation-delay: 500ms; }
+.delay-700 { animation-delay: 700ms; }
+
+/* Utilities */
+:host {
+  display: block;
+}
+
+.perspective-1000 {
+  perspective: 1000px;
+}
+
+.transform-style-3d {
+  transform-style: preserve-3d;
+}

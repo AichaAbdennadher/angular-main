@@ -151,10 +151,12 @@
 
               <button
                 class="icon-btn comment-btn"
+                [class.locked]="post.is_locked"
+                [class.no-click]="post.is_locked && countComments(post) === 0"
                 (click)="toggleComments(post)"
                 type="button"
               >
-                <i class="fa-regular fa-comment"></i>
+                <i [class]="post.is_locked ? 'fa-solid fa-comment-slash' : 'fa-regular fa-comment'"></i>
                 <span>{{ countComments(post) }}</span>
               </button>
             </div>

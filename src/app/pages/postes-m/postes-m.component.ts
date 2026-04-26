@@ -3,6 +3,7 @@ import { PostService } from '../../services/post.service';
 import { AuthService } from '../../services/auth.service';
 import { DashboardService } from '../../services/dashboard.service';
 import { CommentService } from '../../services/comment.service';
+import { ModerateurService } from '../../services/moderateur.service';
 import { animate, style, transition, trigger } from '@angular/animations';
 
 @Component({
@@ -22,6 +23,16 @@ import { animate, style, transition, trigger } from '@angular/animations';
       transition(':leave', [
         animate('200ms ease-in', style({ transform: 'scale(0.95) translateY(20px)', opacity: 0 }))
       ])
+    ]),
+    trigger('slideInOut', [
+      transition(':enter', [
+        style({ height: '0px', opacity: 0, overflow: 'hidden' }),
+        animate('300ms ease-out', style({ height: '*', opacity: 1 }))
+      ]),
+      transition(':leave', [
+        style({ height: '*', opacity: 1, overflow: 'hidden' }),
+        animate('200ms ease-in', style({ height: '0px', opacity: 0 }))
+      ])
     ])
   ]
 })
@@ -35,13 +46,23 @@ export class PostesMComponent implements OnInit {
 
   // Pagination & Filtering Signals
   currentPage = signal(1);
-  itemsPerPage = 10;
+  itemsPerPage = 4;
 
   isFilterOpen = signal(false);
   statusFilter = signal<'all' | 'visible' | 'hidden'>('all');
   lockFilter = signal<'all' | 'locked' | 'unlocked'>('all');
-  dateSort = signal<'recent' | 'ancien'>('recent');
+  dateSort = signal<'recent' | 'ancien'>('ancien');
   specificDateFilter = signal<string | null>(null);
+
+  // Delete Modal Signals
+  isDeleteModalOpen = signal(false);
+  postIdToDelete = signal<number | null>(null);
+
+  isDeleteCommentModalOpen = signal(false);
+  commentIdToDelete = signal<number | null>(null);
+
+  isCommentsExpanded = signal(false);
+  suspensions = signal<any[]>([]);
 
   // Get all posts matching search and filters
   getFilteredPosts = computed(() => {
@@ -104,11 +125,13 @@ export class PostesMComponent implements OnInit {
     private postService: PostService,
     private authService: AuthService,
     private dashboardService: DashboardService,
-    private commentService: CommentService
+    private commentService: CommentService,
+    private moderateurService: ModerateurService
   ) { }
 
   ngOnInit(): void {
     this.loadPosts();
+    this.loadSuspensions();
   }
 
   loadPosts(): void {
@@ -126,6 +149,19 @@ export class PostesMComponent implements OnInit {
     });
   }
 
+
+  // ─── Modal suspension ────────────────────────────────────────────────────────
+  suspendModalOpen = signal(false);
+  userToSuspend    = signal<any | null>(null);
+  suspendReason    = signal('');
+  suspendLoading   = signal(false);
+
+ loadSuspensions(): void {
+    this.moderateurService.getSuspensions().subscribe({
+      next: (data) => this.suspensions.set(data.suspensions || []),
+      error: (err) => console.error('Erreur chargement suspensions', err)
+    });
+  }
   onPageChanged(page: number) {
     this.currentPage.set(page);
   }
@@ -163,7 +199,7 @@ export class PostesMComponent implements OnInit {
     this.searchQuery.set('');
     this.statusFilter.set('all');
     this.lockFilter.set('all');
-    this.dateSort.set('recent');
+    this.dateSort.set('ancien');
     this.specificDateFilter.set(null);
     this.currentPage.set(1);
     this.isFilterOpen.set(false);
@@ -173,19 +209,26 @@ export class PostesMComponent implements OnInit {
     this.showNotification('Fonctionnalité d\'ajout de post bientôt disponible', 'info');
   }
 
-  deletePost(id: number): void {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce post ?')) {
-      this.postService.deletePost(id).subscribe({
-        next: () => {
-          this.posts.update(p => p.filter(item => item.id !== id));
-          this.showNotification('Post supprimé avec succès');
-        },
-        error: (err) => {
-          console.error('Erreur lors de la suppression', err);
-          this.showNotification('Erreur lors de la suppression', 'error');
-        }
-      });
-    }
+  openDeleteModal(id: number): void {
+    this.postIdToDelete.set(id);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  confirmDeletePost(id: number): void {
+    this.postService.deletePost(id).subscribe({
+      next: () => {
+        this.posts.update(p => p.filter(item => item.id !== id));
+        this.showNotification('Post supprimé avec succès');
+        this.isDeleteModalOpen.set(false);
+        this.postIdToDelete.set(null);
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression', err);
+        this.showNotification('Erreur lors de la suppression', 'error');
+        this.isDeleteModalOpen.set(false);
+        this.postIdToDelete.set(null);
+      }
+    });
   }
 
   formatDate(dateStr: string): string {
@@ -220,10 +263,11 @@ export class PostesMComponent implements OnInit {
     };
   }
 
-  viewPost(postId: number): void {
-    const post = this.posts().find(p => p.id === postId);
+  viewPost(id: number) {
+    const post = this.posts().find(p => p.id === id);
     if (post) {
       this.selectedPost.set(post);
+      this.isCommentsExpanded.set(false);
       this.isViewModalOpen.set(true);
     }
   }
@@ -233,27 +277,15 @@ export class PostesMComponent implements OnInit {
     setTimeout(() => this.selectedPost.set(null), 200);
   }
 
-  toggleStatus(post: any): void {
-    if (!post.user?.id) return;
-
-    this.dashboardService.toggleStatus(post.user.id).subscribe({
-      next: (res) => {
-        // Mettre à jour le statut de l'utilisateur pour tous les posts de cet utilisateur
-        this.posts.update(allPosts =>
-          allPosts.map(p => {
-            if (p.user?.id === post.user.id) {
-              return { ...p, user: { ...p.user, status: res.status } };
-            }
-            return p;
-          })
-        );
-        this.showNotification(`Statut de l'utilisateur mis à jour : ${res.status}`);
-      },
-      error: (err) => {
-        console.error('Erreur toggle status', err);
-        this.showNotification('Erreur lors de la mise à jour du statut', 'error');
-      }
-    });
+  /** Ouvre le modal suspension ou réactive directement */
+  toggleUserStatus(user: any): void {
+    if (!user?.id) return;
+    
+    if (user.status === 'suspendu') {
+      this.unsuspend(user);
+    } else {
+      this.openSuspendModal(user);
+    }
   }
 
   getInitial(name: string): string {
@@ -281,31 +313,38 @@ export class PostesMComponent implements OnInit {
     setTimeout(() => this.notification.set(null), 3000);
   }
 
-  deleteComment(commentId: number): void {
-    if (confirm('Supprimer ce commentaire ?')) {
-      this.commentService.deleteComment(commentId).subscribe({
-        next: () => {
-          if (this.selectedPost()) {
-            this.selectedPost.update(p => ({
-              ...p,
-              commentaires: p.commentaires.filter((c: any) => c.id !== commentId)
-            }));
-          }
-          // Update in main list too
-          this.posts.update(all => all.map(p => {
-            if (p.commentaires) {
-              return { ...p, commentaires: p.commentaires.filter((c: any) => c.id !== commentId) };
-            }
-            return p;
+  openDeleteCommentModal(id: number) {
+    this.commentIdToDelete.set(id);
+    this.isDeleteCommentModalOpen.set(true);
+  }
+
+  confirmDeleteComment(commentId: number): void {
+    this.commentService.deleteComment(commentId).subscribe({
+      next: () => {
+        if (this.selectedPost()) {
+          this.selectedPost.update(p => ({
+            ...p,
+            commentaires: p.commentaires.filter((c: any) => c.id !== commentId)
           }));
-          this.showNotification('Commentaire supprimé');
-        },
-        error: (err) => {
-          console.error('Erreur suppression commentaire', err);
-          this.showNotification('Erreur lors de la suppression', 'error');
         }
-      });
-    }
+        // Update in main list too
+        this.posts.update(all => all.map(p => {
+          if (p.commentaires) {
+            return { ...p, commentaires: p.commentaires.filter((c: any) => c.id !== commentId) };
+          }
+          return p;
+        }));
+        this.showNotification('Commentaire supprimé');
+        this.isDeleteCommentModalOpen.set(false);
+        this.commentIdToDelete.set(null);
+      },
+      error: (err) => {
+        console.error('Erreur suppression commentaire', err);
+        this.showNotification('Erreur lors de la suppression', 'error');
+        this.isDeleteCommentModalOpen.set(false);
+        this.commentIdToDelete.set(null);
+      }
+    });
   }
 
   toggleLock(postId: number): void {
@@ -320,6 +359,8 @@ export class PostesMComponent implements OnInit {
       }
     });
   }
+
+  // Retiré car remplacé par toggleUserStatus unifié
 
   toggleHide(postId: number): void {
     this.postService.toggleHide(postId).subscribe({
@@ -339,5 +380,82 @@ export class PostesMComponent implements OnInit {
     if (this.selectedPost()?.id === postId) {
       this.selectedPost.update(p => ({ ...p, ...updates }));
     }
+  }
+    // ─── Suspension ──────────────────────────────────────────────────────────────
+  
+  openSuspendModal(user: any): void {
+    this.userToSuspend.set(user);
+    this.suspendReason.set('');
+    this.suspendModalOpen.set(true);
+  }
+
+  confirmSuspend(): void {
+    const user    = this.userToSuspend();
+    const reason = this.suspendReason().trim();
+    if (!user || !reason) return;
+
+    this.suspendLoading.set(true);
+    this.moderateurService.suspend(user.id, reason).subscribe({
+      next: (res: any) => {
+        this.suspendLoading.set(false);
+        this.suspendModalOpen.set(false);
+        this.userToSuspend.set(null);
+        
+        // Mettre à jour le statut local
+        this.updateUserInPosts(user.id, 'suspendu');
+        this.loadSuspensions();
+        this.showNotification('Utilisateur suspendu avec succès');
+      },
+      error: (err) => {
+        console.error('Erreur suspension', err);
+        this.suspendLoading.set(false);
+        this.showNotification('Erreur lors de la suspension', 'error');
+      }
+    });
+  }
+
+  unsuspend(user: any): void {
+    const suspId = this.findSuspensionId(user.id);
+    if (!suspId) {
+      // Fallback : toggle simple si aucune entrée en BD
+      this.moderateurService.toggleStatusFallback(user.id).subscribe({
+        next: (res: any) => { 
+          this.updateUserInPosts(user.id, res.status);
+          this.loadSuspensions(); 
+          this.showNotification('Utilisateur réactivé');
+        },
+        error: (err) => console.error('Erreur réactivation', err)
+      });
+      return;
+    }
+    this.moderateurService.unsuspend(suspId).subscribe({
+      next: () => { 
+        this.updateUserInPosts(user.id, 'actif');
+        this.loadSuspensions(); 
+        this.showNotification('Utilisateur réactivé');
+      },
+      error: (err) => console.error('Erreur réactivation', err)
+    });
+  }
+
+  private updateUserInPosts(userId: number, status: string): void {
+    this.posts.update(all => all.map(p => {
+      if (p.user?.id === userId) {
+        return { ...p, user: { ...p.user, status: status } };
+      }
+      return p;
+    }));
+    
+    if (this.selectedPost()?.user?.id === userId) {
+      this.selectedPost.update(p => ({
+        ...p,
+        user: { ...p.user, status: status }
+      }));
+    }
+  }
+
+  private findSuspensionId(userId: number): number | null {
+    const s = this.suspensions().find((s: any) => s.user_id === userId);
+    return s ? s.id : null;
   }
 }

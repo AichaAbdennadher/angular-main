@@ -44,7 +44,11 @@ export class LoginComponent {
       },
       error: (err) => {
         this.isSubmitting.set(false);
-        this.error.set(err?.error?.error || err?.error?.message || 'Email ou mot de passe incorrect');
+        if (err.status === 403 && err.error?.error === 'Compte suspendu') {
+          this.router.navigate(['/suppension'], { queryParams: { reason: err.error.reason } });
+        } else {
+          this.error.set(err?.error?.error || err?.error?.message || 'Email ou mot de passe incorrect');
+        }
       }
     });
   }

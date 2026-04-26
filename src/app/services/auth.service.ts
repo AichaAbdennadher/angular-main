@@ -35,11 +35,21 @@ login(data: any): Observable<any> {
   private fetchProfile(token: string) {
     const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
     this.http.get(`${environment.apiUrl}/profile`, { headers })
-      .subscribe(user => {
-        this.userSubject.next(user);
-        this.user.set(user);
+      .subscribe({
+        next: (res: any) => {
+          // Robust extraction: res.user, res.data, or res itself
+          const userData = res.user || res.data || res;
+          this.user.set(userData);
+          this.userSubject.next(userData);
+        },
+        error: (err) => {
+          console.error('Erreur profile fetch:', err);
+          if (err.status === 401) this.logout();
+        }
       });
   }
+
+
 
 logout() {
   localStorage.removeItem(this.tokenKey);
@@ -51,12 +61,14 @@ logout() {
   updateProfile(data: any): Observable<any> {
     return this.http.put(`${environment.apiUrl}/profile`, data)
       .pipe(tap((res: any) => {
-        if (res.user) {
-          this.user.set(res.user);
-          this.userSubject.next(res.user);
+        const userData = res.user || res.data || res;
+        if (userData) {
+          this.user.set(userData);
+          this.userSubject.next(userData);
         }
       }));
   }
+
 
   get user$() { return this.userSubject.asObservable(); }
   getToken(): string | null { return localStorage.getItem(this.tokenKey); }

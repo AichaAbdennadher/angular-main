@@ -25,7 +25,7 @@ export class AppComponent implements OnInit {
     ).subscribe((event: any) => {
       const url = event.urlAfterRedirects;
       this.isAdminPage = url.startsWith('/admin');
-      this.showNavFooter = !this.isAdminPage && !url.startsWith('/moderateur') && !url.startsWith('/login') && !url.startsWith('/register');
+      this.showNavFooter = !this.isAdminPage && !url.startsWith('/moderateur') && !url.startsWith('/login') && !url.startsWith('/register') && !url.startsWith('/suppension');
     });
   }
 

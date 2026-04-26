@@ -1,6 +1,6 @@
-import { Component, signal, OnInit } from '@angular/core';
+import { Component, signal, OnInit, computed } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
-import { PostService } from '../../services/post.service';
+
 
 @Component({
   selector: 'app-profil',
@@ -10,26 +10,16 @@ import { PostService } from '../../services/post.service';
 export class ProfilComponent implements OnInit {
   showToast = signal<boolean>(false);
   isEditing = signal<boolean>(false);
-  activeTab = signal<string>('informations');
-  avatarImage = signal<string>('');
-  initials = signal<string>('');
-  userPosts = signal<any[]>([]);
-  loadingPosts = signal<boolean>(false);
-
-  tabs = [
-    { id: 'informations', label: 'Informations' },
-    { id: 'publications', label: 'Publications' }
-  ];
-
-  profileData = signal<{
-    name: string;
-    pseudo: string;
-    email: string;
-  }>({
-    name: '',
-    pseudo: '',
-    email: ''
+  user = computed(() => this.authService.user());
+  
+  // this code 
+  coverImage = computed(() => {
+    const role = this.user()?.role?.toLowerCase();
+    if (role === 'admin') return 'assets/images/admin.png';
+    if (role === 'moderateur') return 'assets/images/moderateur.png';
+    return 'assets/images/utilisateur.png'; // Fallback
   });
+
 
   editForm: any = {
     value: {
@@ -39,58 +29,22 @@ export class ProfilComponent implements OnInit {
     }
   };
 
-  constructor(public authService: AuthService, private postService: PostService) {}
+  constructor(public authService: AuthService) {}
 
   ngOnInit(): void {
-    const user = this.authService.user();
-    if (user) {
-      this.profileData.set({
-        name: user.name || '',
-        pseudo: user.pseudo || '',
-        email: user.email || ''
-      });
-      this.avatarImage.set(user.avatar || '');
-      this.updateInitials(user);
-      this.loadUserPosts(user.id);
-    }
-  }
-
-  loadUserPosts(userId: number): void {
-    this.loadingPosts.set(true);
-    this.postService.getPosts(userId).subscribe({
-      next: (posts: any[]) => {
-        this.userPosts.set(posts);
-        this.loadingPosts.set(false);
-      },
-      error: (err: any) => {
-        console.error('Erreur chargement posts', err);
-        this.loadingPosts.set(false);
-      }
-    });
-  }
-
-  setActiveTab(id: string): void {
-    this.activeTab.set(id);
-  }
-
-  private updateInitials(user: any): void {
-    if (user?.name) {
-      const parts = user.name.split(' ');
-      if (parts.length >= 2) {
-        this.initials.set((parts[0].charAt(0) + parts[parts.length - 1].charAt(0)).toUpperCase());
-        return;
-      }
-      this.initials.set(user.name.substring(0, 2).toUpperCase());
-      return;
-    }
-    const pseudo = user?.pseudo || 'U';
-    this.initials.set(pseudo.substring(0, 2).toUpperCase());
+    // Initial load handled by AuthService
   }
 
   startEdit(): void {
-    const data = this.profileData();
-    this.editForm.value = { ...data };
-    this.isEditing.set(true);
+    const user = this.authService.user();
+    if (user) {
+      this.editForm.value = { 
+        name: user.name || '',
+        pseudo: user.pseudo || '',
+        email: user.email || ''
+      };
+      this.isEditing.set(true);
+    }
   }
 
   cancelEdit(): void {
@@ -100,12 +54,6 @@ export class ProfilComponent implements OnInit {
   handleSave(): void {
     this.authService.updateProfile(this.editForm.value).subscribe({
       next: (res: any) => {
-        this.profileData.set({
-          name: res.user.name || '',
-          pseudo: res.user.pseudo || '',
-          email: res.user.email || ''
-        });
-        this.updateInitials(res.user);
         this.isEditing.set(false);
         this.showToast.set(true);
         setTimeout(() => this.showToast.set(false), 3000);
@@ -119,9 +67,15 @@ export class ProfilComponent implements OnInit {
     if (input.files && input.files[0]) {
       const reader = new FileReader();
       reader.onload = (e: any) => {
-        this.avatarImage.set(e.target.result);
+        const base64 = e.target.result;
+        const currentUser = this.authService.user();
+        if (currentUser) {
+          this.authService.user.set({ ...currentUser, avatar: base64 });
+        }
       };
       reader.readAsDataURL(input.files[0]);
     }
   }
+
 }
+

@@ -587,6 +587,22 @@
   color: #ef4444 !important;
 }
 
+.comment-btn.locked {
+  color: #94a3b8 !important;
+  opacity: 0.7;
+}
+
+.comment-btn.locked i,
+.comment-btn.locked span {
+  color: #94a3b8 !important;
+}
+
+.no-click {
+  cursor: default !important;
+  pointer-events: none !important;
+  opacity: 0.5 !important;
+}
+
 /* =========================
    COMMENTS PANEL
 ========================= */

@@ -15,6 +15,10 @@ export class AdminCategoriesComponent implements OnInit {
   isEditing = false;
   isIconDropdownOpen = false;
 
+  // Delete Modal Signals
+  isDeleteModalOpen = false;
+  categoryIdToDelete: number | null = null;
+
   availableIcons = [
     'label', 'star', 'favorite', 'home', 'work', 'school', 'science', 'computer',
     'language', 'public', 'bolt', 'eco', 'pets', 'restaurant', 'movie', 'music_note',
@@ -31,7 +35,7 @@ export class AdminCategoriesComponent implements OnInit {
   ];
 
   currentPage = 1;
-  pageSize = 5;
+  pageSize = 4;
 
   get totalPages() {
     return Math.ceil(this.filteredCategoriesCount / this.pageSize);
@@ -144,13 +148,24 @@ export class AdminCategoriesComponent implements OnInit {
     }
   }
 
-  deleteCategory(id: number) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer cette catégorie ?')) {
-      this.categoryService.deleteCategorie(id).subscribe({
-        next: () => this.loadCategories(),
-        error: (err) => console.error('Erreur lors de la suppression', err)
-      });
-    }
+  openDeleteModal(id: number) {
+    this.categoryIdToDelete = id;
+    this.isDeleteModalOpen = true;
+  }
+
+  confirmDeleteCategory(id: number) {
+    this.categoryService.deleteCategorie(id).subscribe({
+      next: () => {
+        this.loadCategories();
+        this.isDeleteModalOpen = false;
+        this.categoryIdToDelete = null;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la suppression', err);
+        this.isDeleteModalOpen = false;
+        this.categoryIdToDelete = null;
+      }
+    });
   }
 }
 

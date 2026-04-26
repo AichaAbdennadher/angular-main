@@ -11,6 +11,13 @@ export class AuthGuard implements CanActivate {
       this.router.navigate(['/login']);
       return false;
     }
+
+    const user = this.auth.user(); // signal value
+    if (user?.status === 'suspendu' && user?.role === 'moderateur') {
+      this.router.navigate(['/suppension'], { queryParams: { reason: 'Compte suspendu' } });
+      return false;
+    }
+
     return true;
   }
 }

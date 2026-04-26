@@ -32,9 +32,11 @@
             {{ user()?.name || user()?.pseudo || 'Modérateur' }}
           </span>
           <button (click)="toggleProfile()"
-            class="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-bold transition-all bg-[#478af5] hover:bg-[#3b74cf] shadow-md active:scale-95 ring-2 ring-white">
-            {{ initials() }}
+            class="w-9 h-9 rounded-full text-white flex items-center justify-center text-sm font-bold transition-all bg-[#478af5] hover:bg-[#3b74cf] shadow-md active:scale-95 ring-2 ring-white overflow-hidden">
+            <img *ngIf="user()?.avatar" [src]="user()?.avatar" class="w-full h-full object-cover" />
+            <span *ngIf="!user()?.avatar">{{ initials() }}</span>
           </button>
+
 
           <!-- Profile Dropdown Menu -->
           <div *ngIf="isProfileOpen()"
@@ -48,6 +50,11 @@
               class="w-full text-left px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center space-x-3 group transition-colors">
               <mat-icon class="w-5 h-5 text-slate-400 group-hover:text-[#478af5]" [style.font-size.px]="20">person</mat-icon>
               <span class="font-medium">Mon profil</span>
+            </button>
+ <button routerLink="/moderateur/postes" (click)="isProfileOpen.set(false)"
+              class="w-full text-left px-5 py-2.5 text-sm text-slate-700 hover:bg-slate-50 flex items-center space-x-3 group transition-colors">
+              <mat-icon class="w-5 h-5 text-slate-400 group-hover:text-[#478af5]" [style.font-size.px]="20">newspaper</mat-icon>
+              <span class="font-medium">Modération des postes</span>
             </button>
 
             <div class="h-px bg-slate-100 my-1 mx-2"></div>

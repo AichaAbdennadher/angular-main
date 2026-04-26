@@ -1,12 +1,6 @@
-import { Component, signal, computed } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { LucideAngularModule } from 'lucide-angular';
-import { animate, style, transition, trigger, state } from '@angular/animations';
-
-
-
-import { DashboardService } from '../../services/dashboard.service';
+import { Component, signal, computed, OnInit } from '@angular/core';
+import { animate, style, transition, trigger } from '@angular/animations';
+import { ModerateurService } from '../../services/moderateur.service';
 
 @Component({
   selector: 'app-admin-users',
@@ -27,167 +21,224 @@ import { DashboardService } from '../../services/dashboard.service';
     ])
   ]
 })
-export class AdminUsersComponent {
-  searchQuery = signal('');
-  statusFilter = signal('');
-  isFilterOpen = signal(false);
-  selectedStudent = signal<any | null>(null);
-  currentPage = signal(1);
-  itemsPerPage = 5;
+export class AdminUsersComponent implements OnInit {
 
-  // CRUD Signals
-  isModalOpen = signal(false);
-  isEditMode = signal(false);
+  // ─── Recherche & filtres ────────────────────────────────────────────────────
+  searchQuery   = signal('');
+  statusFilter  = signal('');
+  isFilterOpen  = signal(false);
+  currentPage   = signal(1);
+  itemsPerPage  = 4;
+
+  // ─── Données ────────────────────────────────────────────────────────────────
+  moderateurs = signal<any[]>([]);
+  suspensions = signal<any[]>([]);
+
+  // ─── Profil ─────────────────────────────────────────────────────────────────
+  selectedStudent = signal<any | null>(null);
+
+  // ─── Modal CRUD modérateur ───────────────────────────────────────────────────
+  isModalOpen   = signal(false);
+  isEditMode    = signal(false);
   moderateurForm = signal<any>({
-    id: null,
-    name: '',
-    email: '',
-    pseudo: '',
-    password: '',
-    role: 'moderateur',
-    status: 'actif'
+    id: null, name: '', email: '', pseudo: '', password: '', role: 'moderateur', status: 'actif'
   });
 
-  moderateurs = signal<any[]>([]);
+  // ─── Modal suppression ───────────────────────────────────────────────────────
+  isDeleteModalOpen    = signal(false);
+  moderateurIdToDelete = signal<number | null>(null);
 
-  constructor(private dashboardService: DashboardService) {}
+  // ─── Modal suspension ────────────────────────────────────────────────────────
+  suspendModalOpen = signal(false);
+  modToSuspend     = signal<any | null>(null);
+  suspendReason    = signal('');
+  suspendLoading   = signal(false);
 
-  ngOnInit() {
+  constructor(private moderateurService: ModerateurService) {}
+
+  // ─── Cycle de vie ────────────────────────────────────────────────────────────
+
+  ngOnInit(): void {
     this.loadModerateurs();
+    this.loadSuspensions();
   }
 
-  loadModerateurs() {
-    this.dashboardService.getModerateurs().subscribe({
-      next: (data) => {
-        this.moderateurs.set(data.moderateurs);
-      },
-      error: (err) => console.error('Erreur lors du chargement des modérateurs', err)
+  // ─── Chargement ──────────────────────────────────────────────────────────────
+
+  loadModerateurs(): void {
+    this.moderateurService.getAll().subscribe({
+      next: (data) => this.moderateurs.set(data.moderateurs),
+      error: (err) => console.error('Erreur chargement modérateurs', err)
     });
   }
 
-  filteredStudents = computed(() => {
-    const q = this.searchQuery().toLowerCase();
-    const status = this.statusFilter();
+  loadSuspensions(): void {
+    this.moderateurService.getSuspensions().subscribe({
+      next: (data) => this.suspensions.set(data.suspensions || []),
+      error: (err) => console.error('Erreur chargement suspensions', err)
+    });
+  }
 
+  // ─── Pagination ──────────────────────────────────────────────────────────────
+
+  filteredStudents = computed(() => {
+    const q      = this.searchQuery().toLowerCase();
+    const status = this.statusFilter();
     return this.moderateurs().filter(s => {
-      const matchesSearch = (s.name?.toLowerCase().includes(q) || s.pseudo?.toLowerCase().includes(q) || s.email?.toLowerCase().includes(q));
+      const matchesSearch = s.name?.toLowerCase().includes(q)
+        || s.pseudo?.toLowerCase().includes(q)
+        || s.email?.toLowerCase().includes(q);
       const matchesStatus = !status || s.status?.toLowerCase() === status.toLowerCase();
       return matchesSearch && matchesStatus;
     });
   });
 
-  filteredCount = computed(() => this.filteredStudents().length);
-  totalPages = computed(() => Math.ceil(this.filteredCount() / this.itemsPerPage));
-  startIndex = computed(() => (this.currentPage() - 1) * this.itemsPerPage);
-  endIndex = computed(() => Math.min(this.startIndex() + this.itemsPerPage, this.filteredCount()));
-  
+  filteredCount   = computed(() => this.filteredStudents().length);
+  totalPages      = computed(() => Math.ceil(this.filteredCount() / this.itemsPerPage));
+  startIndex      = computed(() => (this.currentPage() - 1) * this.itemsPerPage);
+  endIndex        = computed(() => Math.min(this.startIndex() + this.itemsPerPage, this.filteredCount()));
   paginatedStudents = computed(() => {
     const start = this.startIndex();
     return this.filteredStudents().slice(start, start + this.itemsPerPage);
   });
+  pageNumbers = computed(() => Array.from({ length: this.totalPages() }, (_, i) => i + 1));
 
-  pageNumbers = computed(() => {
-    const total = this.totalPages();
-    return Array.from({ length: total }, (_, i) => i + 1);
-  });
+  // ─── Filtres ─────────────────────────────────────────────────────────────────
 
-  toggleFilter() { this.isFilterOpen.update(v => !v); }
-  
-  onSearchQueryChange(val: string) {
-    this.searchQuery.set(val);
-    this.currentPage.set(1);
-  }
-
-  onStatusFilterChange(val: string) {
-    this.statusFilter.set(val);
-    this.currentPage.set(1);
-  }
-
+  toggleFilter()               { this.isFilterOpen.update(v => !v); }
+  onSearchQueryChange(v: string) { this.searchQuery.set(v); this.currentPage.set(1); }
+  onStatusFilterChange(v: string){ this.statusFilter.set(v); this.currentPage.set(1); }
   clearFilters() {
     this.searchQuery.set('');
     this.statusFilter.set('');
     this.isFilterOpen.set(false);
     this.currentPage.set(1);
   }
-
-  onPageChanged(page: number) {
-    this.currentPage.set(page);
-  }
-
+  onPageChanged(page: number)  { this.currentPage.set(page); }
   prevPage() { if (this.currentPage() > 1) this.currentPage.update(v => v - 1); }
   nextPage() { if (this.currentPage() < this.totalPages()) this.currentPage.update(v => v + 1); }
-  goToPage(p: number) { this.currentPage.set(p); }
-  
-  viewProfile(student: any) {
+  goToPage(p: number)          { this.currentPage.set(p); }
+
+  // ─── Profil ──────────────────────────────────────────────────────────────────
+
+  viewProfile(student: any): void {
     this.selectedStudent.set(student);
   }
 
-  // CRUD Methods
-  openAddModal() {
+  handleImageUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        const student = this.selectedStudent();
+        if (student) this.selectedStudent.set({ ...student, avatar: e.target.result });
+      };
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+
+  // ─── CRUD modérateur ─────────────────────────────────────────────────────────
+
+  openAddModal(): void {
     this.isEditMode.set(false);
-    this.moderateurForm.set({
-      id: null,
-      name: '',
-      email: '',
-      pseudo: '',
-      password: '',
-      role: 'moderateur',
-      status: 'actif'
-    });
+    this.moderateurForm.set({ id: null, name: '', email: '', pseudo: '', password: '', role: 'moderateur', status: 'actif' });
     this.isModalOpen.set(true);
   }
 
-  openEditModal(mod: any) {
+  openEditModal(mod: any): void {
     this.isEditMode.set(true);
-    this.moderateurForm.set({
-      id: mod.id,
-      name: mod.name,
-      email: mod.email,
-      pseudo: mod.pseudo,
-      password: '', // On ne pré-remplit pas le mot de passe
-      role: mod.role,
-      status: mod.status
-    });
+    this.moderateurForm.set({ id: mod.id, name: mod.name, email: mod.email, pseudo: mod.pseudo, password: '', role: mod.role, status: mod.status });
     this.isModalOpen.set(true);
   }
 
-  saveModerateur() {
+  saveModerateur(): void {
     const data = this.moderateurForm();
-    if (this.isEditMode()) {
-      this.dashboardService.updateModerateur(data.id, data).subscribe({
-        next: () => {
-          this.isModalOpen.set(false);
-          this.loadModerateurs();
-        },
-        error: (err) => console.error('Erreur update', err)
-      });
-    } else {
-      this.dashboardService.addModerateur(data).subscribe({
-        next: () => {
-          this.isModalOpen.set(false);
-          this.loadModerateurs();
-        },
-        error: (err) => console.error('Erreur add', err)
-      });
-    }
-  }
+    const call = this.isEditMode()
+      ? this.moderateurService.update(data.id, data)
+      : this.moderateurService.create(data);
 
-  deleteModerateur(id: number) {
-    if (confirm('Êtes-vous sûr de vouloir supprimer ce modérateur ?')) {
-      this.dashboardService.deleteModerateur(id).subscribe({
-        next: () => this.loadModerateurs(),
-        error: (err) => console.error('Erreur delete', err)
-      });
-    }
-  }
-
-  toggleStatus(mod: any) {
-    this.dashboardService.toggleStatus(mod.id).subscribe({
-      next: (res) => {
-        mod.status = res.status;
-        this.loadModerateurs();
-      },
-      error: (err) => console.error('Erreur toggle status', err)
+    call.subscribe({
+      next: () => { this.isModalOpen.set(false); this.loadModerateurs(); },
+      error: (err) => console.error('Erreur sauvegarde', err)
     });
+  }
+
+  openDeleteModal(id: number): void {
+    this.moderateurIdToDelete.set(id);
+    this.isDeleteModalOpen.set(true);
+  }
+
+  confirmDeleteModerateur(id: number): void {
+    this.moderateurService.delete(id).subscribe({
+      next: () => {
+        this.loadModerateurs();
+        this.isDeleteModalOpen.set(false);
+        this.moderateurIdToDelete.set(null);
+      },
+      error: (err) => {
+        console.error('Erreur suppression', err);
+        this.isDeleteModalOpen.set(false);
+        this.moderateurIdToDelete.set(null);
+      }
+    });
+  }
+
+  // ─── Suspension ──────────────────────────────────────────────────────────────
+
+  /** Ouvre le modal suspension ou réactive directement */
+  toggleStatus(mod: any): void {
+    if (mod.status === 'suspendu') {
+      this.unsuspend(mod);
+    } else {
+      this.openSuspendModal(mod);
+    }
+  }
+
+  openSuspendModal(mod: any): void {
+    this.modToSuspend.set(mod);
+    this.suspendReason.set('');
+    this.suspendModalOpen.set(true);
+  }
+
+  confirmSuspend(): void {
+    const mod    = this.modToSuspend();
+    const reason = this.suspendReason().trim();
+    if (!mod || !reason) return;
+
+    this.suspendLoading.set(true);
+    this.moderateurService.suspend(mod.id, reason).subscribe({
+      next: () => {
+        this.suspendLoading.set(false);
+        this.suspendModalOpen.set(false);
+        this.modToSuspend.set(null);
+        this.loadModerateurs();
+        this.loadSuspensions();
+      },
+      error: (err) => {
+        console.error('Erreur suspension', err);
+        this.suspendLoading.set(false);
+      }
+    });
+  }
+
+  unsuspend(mod: any): void {
+    const suspId = this.findSuspensionId(mod.id);
+    if (!suspId) {
+      // Fallback : toggle simple si aucune entrée en BD
+      this.moderateurService.toggleStatusFallback(mod.id).subscribe({
+        next: () => { this.loadModerateurs(); this.loadSuspensions(); },
+        error: (err) => console.error('Erreur réactivation', err)
+      });
+      return;
+    }
+    this.moderateurService.unsuspend(suspId).subscribe({
+      next: () => { this.loadModerateurs(); this.loadSuspensions(); },
+      error: (err) => console.error('Erreur réactivation', err)
+    });
+  }
+
+  private findSuspensionId(userId: number): number | null {
+    const s = this.suspensions().find((s: any) => s.user_id === userId);
+    return s ? s.id : null;
   }
 }
